@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <link rel="icon" type="image/png" href="GuardianIcon.png">
+  <link rel="stylesheet" href="styles.css">
+  <title>Inventario - StockGuardian</title>
+</head>
+
+<body>
+
+  <header class="navbar">
+    <h5 id="headertitle">(EMPRESA)</h5>
+    <img id="headerlogo" src="GuardianIcon.png" alt="Logo">
+  </header>
+
+  <div class="container">
+    <div class="search-bar">
+      <input type="text" placeholder="Ingrese lo que desee buscar" />
+      <div class="button-group">
+        <button class="import">Importar...</button>
+        <button class="export">Exportar...</button>
+        <button class="history">Historial de cambios</button>
+      </div>
+    </div>
+
+    <div class="info">
+      <p><strong>ID del Inventario:</strong> <span>-</span></p>
+      <p><strong>Descripción:</strong></p>
+      <p>-</p>
+    </div>
+
+    <div class="add-row">+</div>
+
+    <table>
+      <thead>
+        <tr>
+          <th>ID Producto</th>
+          <th>Nombre</th>
+          <th>Descripción</th>
+          <th>Cantidad Disp.</th>
+          <th>Cantidad Min.</th>
+          <th>Cantidad Máx.</th>
+          <th>Unidad de Medida</th>
+          <th>Precio Unitario</th>
+          <th>Costo Unitario</th>
+          <th>Código de Barras</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>-</td>
+          <td>-</td>
+          <td>-</td>
+          <td>-</td>
+          <td>-</td>
+          <td>-</td>
+          <td>-</td>
+          <td>-</td>
+          <td>-</td>
+          <td>-</td>
+          <td class="delete-icon">✖</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+</body>
+</html>

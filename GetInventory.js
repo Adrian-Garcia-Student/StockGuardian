@@ -3,8 +3,8 @@ const zlib = require('zlib');
 const s3 = new AWS.S3();
 const dynamoDB = new AWS.DynamoDB.DocumentClient();
 
-async function getUserInventories(ID_Creador, ID_Inventario = null) {
-  const fecha = new Date().toISOString().split("T")[0]; // Get today's date in YYYY-MM-DD format
+async function getUserInventories(ID_Creador, ID_Inventario) {
+  const fecha = new Date().toISOString().split("T")[0];
   const bucket = 'db-bucket-backup-14251';
   const prefix = `exportaciones/${fecha}/Inventario/AWSDynamoDB/01745366415493-f6801c89/data/`;
   
@@ -12,21 +12,17 @@ async function getUserInventories(ID_Creador, ID_Inventario = null) {
     // Try to fetch the data from DynamoDB first
     const params = {
       TableName: 'Inventario', // Specify the correct table name
-      KeyConditionExpression: 'ID_Creador = :creatorId',
+      KeyConditionExpression: 'ID_Inventario = :inventario AND ID_Creador = :creador',
       ExpressionAttributeValues: {
-        ':creatorId': ID_Creador,
+        ':inventario': ID_Inventario,
+        ':creador': ID_Creador
       },
     };
-
-    // If ID_Inventario is provided, add that to the condition as well
-    if (ID_Inventario) {
-      params.KeyConditionExpression += ' AND ID_Inventario = :inventoryId';
-      params.ExpressionAttributeValues[':inventoryId'] = ID_Inventario;
-    }
 
     const dynamoResult = await dynamoDB.query(params).promise();
 
     if (dynamoResult.Items && dynamoResult.Items.length > 0) {
+      console.log('Datos obtenidos de DynamoDB');
       return dynamoResult.Items; // Return the result from DynamoDB if found
     } else {
       throw new Error('No data found in DynamoDB'); // If no data found, fall back to S3
@@ -54,7 +50,7 @@ async function getUserInventories(ID_Creador, ID_Inventario = null) {
         }
       }
     }
-
+    console.log("Resultados obtenidos del bucket de respaldo");
     return results; // Return the result from S3 if DynamoDB fails
   }
 }

@@ -1,40 +1,40 @@
-const AWS = require('aws-sdk');
-const zlib = require('zlib');
+// Importando las dependencias usando ES6 import
+import AWS from 'aws-sdk';
+import zlib from 'zlib';
+
+// Inicializando los servicios de AWS
 const s3 = new AWS.S3();
 const dynamoDB = new AWS.DynamoDB.DocumentClient();
 
-async function getUserInventories(ID_Creador, ID_Inventario = null) {
-  const fecha = new Date().toISOString().split("T")[0]; // Get today's date in YYYY-MM-DD format
+// Definición de la función getUserInventories
+export async function getUserInventories(ID_Creador, ID_Inventario) {
+  const fecha = new Date().toISOString().split("T")[0];
   const bucket = 'db-bucket-backup-14251';
   const prefix = `exportaciones/${fecha}/Inventario/AWSDynamoDB/01745366415493-f6801c89/data/`;
-  
+
   try {
-    // Try to fetch the data from DynamoDB first
+    // Intentando obtener los datos desde DynamoDB
     const params = {
-      TableName: 'Inventario', // Specify the correct table name
-      KeyConditionExpression: 'ID_Creador = :creatorId',
+      TableName: 'Inventario', // Especificar el nombre correcto de la tabla
+      KeyConditionExpression: 'ID_Inventario = :inventario AND ID_Creador = :creador',
       ExpressionAttributeValues: {
-        ':creatorId': ID_Creador,
+        ':inventario': ID_Inventario,
+        ':creador': ID_Creador
       },
     };
-
-    // If ID_Inventario is provided, add that to the condition as well
-    if (ID_Inventario) {
-      params.KeyConditionExpression += ' AND ID_Inventario = :inventoryId';
-      params.ExpressionAttributeValues[':inventoryId'] = ID_Inventario;
-    }
 
     const dynamoResult = await dynamoDB.query(params).promise();
 
     if (dynamoResult.Items && dynamoResult.Items.length > 0) {
-      return dynamoResult.Items; // Return the result from DynamoDB if found
+      console.log('Datos obtenidos de DynamoDB');
+      return dynamoResult.Items; // Devolver los resultados desde DynamoDB si se encuentran
     } else {
-      throw new Error('No data found in DynamoDB'); // If no data found, fall back to S3
+      throw new Error('No data found in DynamoDB'); // Si no se encuentran datos, caer en S3
     }
   } catch (error) {
     console.log(`Error accessing DynamoDB: ${error.message}. Falling back to S3.`);
 
-    // If there's an error, or no data, use S3 as the fallback
+    // Si hay un error, o no se encuentran datos, usar S3 como respaldo
     const list = await s3.listObjectsV2({ Bucket: bucket, Prefix: prefix }).promise();
     const results = [];
 
@@ -54,8 +54,7 @@ async function getUserInventories(ID_Creador, ID_Inventario = null) {
         }
       }
     }
-
-    return results; // Return the result from S3 if DynamoDB fails
+    console.log("Resultados obtenidos del bucket de respaldo");
+    return results; // Devolver los resultados de S3 si DynamoDB falla
   }
 }
-

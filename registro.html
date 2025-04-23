@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Registro | StockGuardian</title>
+  <link rel="stylesheet" href="registro.css" />
+</head>
+<body>
+  <div class="registro-container">
+    <!-- Fondos -->
+    <img src="https://placehold.co/2360x1640" alt="fondo1" class="bg-1">
+    <img src="https://placehold.co/1976x1146" alt="fondo2" class="bg-2">
+
+    <!-- Caja blanca -->
+    <div class="form-card">
+      <!-- Botón regresar -->
+      <div class="back-button" onclick="window.location.href='index.html'">&#10094;</div>
+
+      <!-- Título -->
+      <h2 class="titulo">Registro</h2>
+
+      <!-- Formulario -->
+      <form id="form-registro">
+        <label>Correo Electrónico *</label>
+        <input type="email" name="email" placeholder="ejemplo@gmail.com" required>
+
+        <label>Contraseña *</label>
+        <input type="password" name="password" placeholder="Máximo 8 caracteres" maxlength="8" required>
+
+        <label>Confirmar Contraseña *</label>
+        <input type="password" name="confirm" required>
+
+        <label>Comida Favorita *</label>
+        <input type="text" name="comida" placeholder="Ingresa tu comida favorita y recuérdala muy bien" required>
+
+        <div class="registro-actions">
+          <a href="login.html" class="login-link">¿Ya tiene una cuenta? Inicia Sesión</a>
+          <button type="submit">Registrarse</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    // Validación simple
+    const form = document.getElementById("form-registro");
+    form.addEventListener("submit", function(e) {
+      const password = form.password.value;
+      const confirm = form.confirm.value;
+
+      if (password !== confirm) {
+        alert("Las contraseñas no coinciden.");
+        e.preventDefault();
+      }
+    });
+  </script>
+</body>
+</html>

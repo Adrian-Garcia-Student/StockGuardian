@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Selección de Usuario | StockGuardian</title>
+  <link rel="stylesheet" href="seleccion_usuario.css" />
+</head>
+<body>
+  <div class="seleccion-container">
+    <!-- Fondos -->
+    <img src="https://placehold.co/2360x1640" alt="fondo1" class="bg-1">
+    <img src="https://placehold.co/1976x1146" alt="fondo2" class="bg-2">
+
+    <!-- Contenedor blanco -->
+    <div class="form-card">
+      <!-- Logout -->
+      <div class="logout" onclick="window.location.href='index.html'">&#x21A9;</div>
+
+      <!-- Listado -->
+      <div class="listado" onclick="window.location.href='listado.html'">&#x2630;</div>
+
+      <!-- Título -->
+      <h2 class="titulo">Selecciona un rol o crea un nuevo inventario</h2>
+
+      <!-- Bloques -->
+      <div class="roles-container">
+        <div class="rol">
+          <div class="rol-img"></div>
+          <input type="text" placeholder="Ingrese ID del inventario" id="id-admin">
+          <button onclick="accederComo('admin')">Administrador</button>
+        </div>
+
+        <div class="rol">
+          <div class="rol-img"></div>
+          <button onclick="window.location.href='crear_inventario.html'">Crear</button>
+        </div>
+
+        <div class="rol">
+          <div class="rol-img"></div>
+          <input type="text" placeholder="Ingrese ID del inventario" id="id-invitado">
+          <button onclick="accederComo('invitado')">Invitado</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function accederComo(tipo) {
+      const id = tipo === 'admin' 
+        ? document.getElementById('id-admin').value.trim()
+        : document.getElementById('id-invitado').value.trim();
+
+      if (!id) {
+        alert("Por favor ingresa un ID válido.");
+        return;
+      }
+
+      if (tipo === 'admin') {
+        window.location.href = "vista_admin.html";
+      } else {
+        window.location.href = "vista_invitado.html";
+      }
+    }
+  </script>
+</body>
+</html>

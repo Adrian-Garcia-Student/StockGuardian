@@ -3,6 +3,7 @@ import cors from "cors";
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
 import { GetCommand, DynamoDBDocumentClient } from "@aws-sdk/lib-dynamodb";
 import bodyParser from "body-parser";
+import path from "path";  // Importamos path para manejar rutas
 
 const app = express();
 const port = 3000;
@@ -10,6 +11,10 @@ const port = 3000;
 app.use(cors()); // permite que frontend haga peticiones
 app.use(bodyParser.json());
 
+// Servir archivos estáticos desde la carpeta public
+app.use(express.static(path.join(__dirname, "public")));  // Esto permite acceder a archivos en la carpeta 'public'
+
+// Configura el cliente de DynamoDB
 const client = new DynamoDBClient({ region: "us-east-1" });
 const ddbDocClient = DynamoDBDocumentClient.from(client);
 
@@ -37,6 +42,7 @@ app.post("/login", async (req, res) => {
   }
 });
 
+// Inicia el servidor
 app.listen(port, () => {
   console.log(`Servidor escuchando en http://localhost:${port}`);
 });

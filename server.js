@@ -3,10 +3,15 @@ import cors from "cors";
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
 import { GetCommand, DynamoDBDocumentClient } from "@aws-sdk/lib-dynamodb";
 import bodyParser from "body-parser";
-import path from "path";  // Importamos path para manejar rutas
+import path from "path";  // Importamos path
+import { fileURLToPath } from "url";  // Para convertir la URL en ruta de archivo
 
 const app = express();
 const port = 3000;
+
+// Obtener el directorio actual (equivalente a __dirname en módulos ES)
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 app.use(cors()); // permite que frontend haga peticiones
 app.use(bodyParser.json());

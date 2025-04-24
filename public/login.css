@@ -15,22 +15,22 @@ body {
   
   .bg-1, .bg-2 {
     position: absolute;
-    opacity: 0.8;
+    opacity: 1;
     z-index: -2;
   }
   
   .bg-1 {
     top: -346px;
-    left: 80px;
-    width: 2360px;
+    left: 500px;
+    width: 1976px;
     height: 1640px;
   }
   
   .bg-2 {
-    top: -118px;
-    left: 216px;
+    top: -200px;
+    left: 500px;
     width: 1976px;
-    height: 1146px;
+    height: 1300px;
   }
   
   .form-card {

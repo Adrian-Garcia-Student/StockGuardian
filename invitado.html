@@ -1,73 +1,98 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <title>Inventario - Invitado</title>
-  <link rel="stylesheet" href="invitado.css">
+  <link rel="stylesheet" href="invitado.css" />
 </head>
 <body>
-  <header class="header">
-    <h1>Latosos co</h1>
+  <header class="encabezado">
+    <h1>LATOSOS CO</h1>
+    <img src="https://placehold.co/64x64" alt="Escudo" class="icono-escudo" />
   </header>
 
-  <main class="main-container">
-    <section class="info-box">
-      <h2 class="inventory-id">ID: 23DT53Y7U6</h2>
-      <p class="description">
-        Este inventario contiene todos los productos activos para venta en el sistema. 
-        Muestra sus datos actuales incluyendo cantidades mínimas y máximas.
-      </p>
+  <main class="contenido">
+    <section class="caja-principal">
+      <div class="barra-superior">
+        <button class="btn-regresar" onclick="window.location.href='seleccion_usuario.html'">&#8592;</button>
+        <div class="busqueda">
+            <input type="text" placeholder="Ingrese lo que desee buscar" />
+            <img class="icono-busqueda" src="https://placehold.co/24x24" alt="Buscar" />
+            <span class="btn-cerrar">×</span>
+          </div>          
+      </div>
+
+      <div class="info-inventario">
+        <div>
+          <p class="id-label">ID del Inventario:</p>
+          <div class="id-contenedor">
+            <span id="inventoryID">23DT53Y7U6</span>
+            <button onclick="copiarID()">📋</button>
+          </div>
+        </div>
+        <div>
+          <p class="descripcion-label">Descripción:</p>
+          <p class="descripcion-texto">
+            El inventario de latas registra y gestiona el stock disponible para garantizar un control eficiente.
+            Contiene datos detallados sobre tipos, cantidades y ubicaciones, facilitando el seguimiento y
+            reposición. Con este sistema, se optimiza el almacenamiento, reduciendo pérdidas y mejorando la
+            distribución según la demanda y necesidades operativas.
+          </p>
+        </div>
+      </div>
+
+      <div class="tabla-container">
+        <table>
+          <thead>
+            <tr>
+              <th>ID Producto</th>
+              <th>Nombre</th>
+              <th>Descripción</th>
+              <th>Cantidad Disp.</th>
+              <th>Cantidad Mín.</th>
+              <th>Cantidad Máx.</th>
+              <th>Unidad de Medida</th>
+              <th>Precio Unitario</th>
+              <th>Costo Unitario</th>
+              <th>Código de Barras</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>12345</td>
+              <td>Latas de Tomate</td>
+              <td>Latas entomatadas</td>
+              <td>30</td>
+              <td>50</td>
+              <td>100</td>
+              <td>Unidades</td>
+              <td>30</td>
+              <td>25</td>
+              <td></td>
+            </tr>
+            <tr>
+              <td>84356</td>
+              <td>Latas de Elote</td>
+              <td>Latas con granos de elote</td>
+              <td>60</td>
+              <td>50</td>
+              <td>100</td>
+              <td>Unidades</td>
+              <td>30</td>
+              <td>20</td>
+              <td></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </section>
-
-    <div class="search-bar">
-      <input type="text" placeholder="Buscar..." disabled />
-    </div>
-
-    <div class="table-container">
-      <table class="inventory-table">
-        <thead>
-          <tr>
-            <th>ID Producto</th>
-            <th>Nombre</th>
-            <th>Descripción</th>
-            <th>Cantidad Disponible</th>
-            <th>Cantidad Mínima</th>
-            <th>Cantidad Máxima</th>
-            <th>Unidad</th>
-            <th>Precio Unitario</th>
-            <th>Costo Unitario</th>
-            <th>Código de Barras</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>001</td>
-            <td>Papas fritas</td>
-            <td>Snack salado de papa</td>
-            <td>120</td>
-            <td>50</td>
-            <td>200</td>
-            <td>Bolsas</td>
-            <td>$15.00</td>
-            <td>$8.00</td>
-            <td>7501031300072</td>
-          </tr>
-          <tr>
-            <td>002</td>
-            <td>Galletas</td>
-            <td>Dulces de chocolate</td>
-            <td>80</td>
-            <td>30</td>
-            <td>150</td>
-            <td>Cajas</td>
-            <td>$25.00</td>
-            <td>$12.00</td>
-            <td>7501234567890</td>
-          </tr>
-          <!-- Puedes agregar más filas estáticas aquí -->
-        </tbody>
-      </table>
-    </div>
   </main>
+
+  <script>
+    function copiarID() {
+      const id = document.getElementById("inventoryID").innerText;
+      navigator.clipboard.writeText(id);
+    }
+  </script>
 </body>
 </html>

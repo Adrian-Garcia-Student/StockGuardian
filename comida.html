@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Validar Comida Favorita | StockGuardian</title>
+  <link rel="stylesheet" href="comida.css" />
+</head>
+<body>
+  <div class="comida-container">
+    <!-- Fondos -->
+    <img src="https://placehold.co/2360x1640" alt="fondo1" class="bg-1">
+    <img src="https://placehold.co/1876x1152" alt="fondo2" class="bg-2">
+
+    <!-- Caja del formulario -->
+    <div class="form-card">
+      <!-- Botón regresar -->
+      <div class="back-button" onclick="window.location.href='recuperar.html'">&#10094;</div>
+
+      <!-- Título -->
+      <h2 class="titulo">¿Comida Favorita?</h2>
+
+      <!-- Formulario -->
+      <form id="form-comida">
+        <input type="text" name="comida" placeholder="¿Cuál es tu Comida Favorita?" required>
+
+        <!-- Botón confirmar -->
+        <button type="submit">Confirmar</button>
+      </form>
+
+      <!-- Icono opcional ilustrativo -->
+      <img src="https://placehold.co/126x129" alt="icono" class="comida-icon">
+    </div>
+  </div>
+
+  <script>
+    document.getElementById("form-comida").addEventListener("submit", function(e) {
+      e.preventDefault();
+      // Lógica temporal
+      alert("Validación correcta. Redirigiendo a inicio de sesión...");
+      window.location.href = "login.html";
+    });
+  </script>
+</body>
+</html>

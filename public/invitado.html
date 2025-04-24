@@ -16,7 +16,7 @@
       <div class="barra-superior">
         <button class="btn-regresar" onclick="window.location.href='seleccion_usuario.html'">&#8592;</button>
         <div class="busqueda">
-            <input type="text" placeholder="Ingrese lo que desee buscar" />
+          <input type="text" placeholder="Ingrese lo que desee buscar" id="searchInput" onkeyup="searchTable()" />
             <img class="icono-busqueda" src="https://placehold.co/24x24" alt="Buscar" />
             <span class="btn-cerrar">×</span>
           </div>          
@@ -94,5 +94,31 @@
       navigator.clipboard.writeText(id);
     }
   </script>
+  <script>
+    function copiarID() {
+      const id = document.getElementById("inventoryID").innerText;
+      navigator.clipboard.writeText(id);
+    }
+  
+    function searchTable() {
+      const input = document.getElementById("searchInput");
+      const filter = input.value.toLowerCase();
+      const table = document.querySelector("table");
+      const tr = table.getElementsByTagName("tr");
+  
+      for (let i = 1; i < tr.length; i++) {
+        let visible = false;
+        const td = tr[i].getElementsByTagName("td");
+        for (let j = 0; j < td.length; j++) {
+          if (td[j].innerText.toLowerCase().includes(filter)) {
+            visible = true;
+            break;
+          }
+        }
+        tr[i].style.display = visible ? "" : "none";
+      }
+    }
+  </script>
+  
 </body>
 </html>

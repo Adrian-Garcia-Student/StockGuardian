@@ -66,6 +66,8 @@
       }
 
       alert(data.mensaje);
+      localStorage.setItem("email", email);
+      localStorage.setItem("id_usuario", data.id); //Obtenido de server.js
       window.location.href = "seleccion_usuario.html";
     } catch (error) {
       console.error("Error de conexión:", error);

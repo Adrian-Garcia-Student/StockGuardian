@@ -40,7 +40,10 @@ app.post("/login", async (req, res) => {
       return res.status(401).json({ mensaje: "Usuario o contraseña incorrectos." });
     }
 
-    res.json({ mensaje: `Acceso concedido. ¡Bienvenido, ${resultado.Item.Nombre}!` });
+    res.json({ 
+      mensaje: `Acceso concedido. ¡Bienvenido, ${resultado.Item.Nombre}!`,
+      id: resultado.Item.ID_Usuario,
+    });
   } catch (error) {
     console.error("Error al autenticar:", error);
     res.status(500).json({ mensaje: "Error del servidor." });

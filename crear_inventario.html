@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Crear Inventario | StockGuardian</title>
+  <link rel="stylesheet" href="crear_inventario.css" />
+</head>
+<body>
+  <div class="crear-container">
+    <!-- Fondos -->
+    <img src="https://placehold.co/1976x1373" class="bg-left" alt="Fondo">
+    <img src="https://placehold.co/1340x893" class="bg-mid" alt="Fondo">
+    <img src="https://placehold.co/1976x1373" class="bg-right" alt="Fondo">
+    <img src="https://placehold.co/2235x1257" class="bg-front" alt="Fondo">
+
+    <!-- Encabezado -->
+    <div class="encabezado">
+      <h1>STOCKGUARDIAN</h1>
+      <img src="https://placehold.co/160x159" alt="Logo">
+    </div>
+
+    <!-- Panel de creación -->
+    <div class="form-card">
+      <!-- Botón regresar -->
+      <div class="back-button" onclick="window.location.href='seleccion_usuario.html'">&#10094;</div>
+
+      <h2>Nuevo inventario</h2>
+
+      <form id="form-inventario">
+        <label for="nombre">Nombre del inventario *</label>
+        <input type="text" id="nombre" name="nombre" placeholder="Nuevo Inventario" required>
+
+        <label for="descripcion">Descripción *</label>
+        <input type="text" id="descripcion" name="descripcion" placeholder="¿De qué es tu inventario?" required>
+
+        <button type="submit">Aceptar</button>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    document.getElementById("form-inventario").addEventListener("submit", function(e) {
+      e.preventDefault();
+      const nombre = document.getElementById("nombre").value.trim();
+      const descripcion = document.getElementById("descripcion").value.trim();
+
+      if (!nombre || !descripcion) {
+        alert("Por favor completa todos los campos.");
+        return;
+      }
+
+      alert(`Inventario "${nombre}" creado con éxito (simulado).`);
+      window.location.href = "listado.html";
+    });
+  </script>
+</body>
+</html>

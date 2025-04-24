@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Listado de Inventarios | StockGuardian</title>
+  <link rel="stylesheet" href="listado.css" />
+</head>
+<body>
+  <div class="listado-container">
+    <!-- Fondos -->
+    <img src="https://placehold.co/2360x1640" class="bg-1" alt="Fondo">
+    <img src="https://placehold.co/1976x1146" class="bg-2" alt="Fondo">
+
+    <!-- Panel -->
+    <div class="panel">
+      <div class="volver" onclick="window.location.href='seleccion_usuario.html'">&#10094;</div>
+      <h1 class="titulo">Tus Inventarios</h1>
+
+      <!-- Tabla de Inventarios (simulada) -->
+      <div class="tabla">
+        <div class="fila encabezado">
+          <span>Nombre</span>
+          <span>ID</span>
+          <span>Últ. Modificación</span>
+          <span>Acciones</span>
+        </div>
+
+        <div class="fila">
+          <span>Llantas y Más</span>
+          <span>45TYUY64XS <button onclick="copiarID('45TYUY64XS')">📋</button></span>
+          <span>24/03/2025</span>
+          <span><button class="eliminar-btn" onclick="mostrarConfirmacion('45TYUY64XS')">🗑️</button></span>
+        </div>
+
+        <div class="fila">
+          <span>Latosos Co</span>
+          <span>982TE76HB1 <button onclick="copiarID('982TE76HB1')">📋</button></span>
+          <span>30/03/2025</span>
+          <span><button class="eliminar-btn" onclick="mostrarConfirmacion('982TE76HB1')">🗑️</button></span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal de Confirmación -->
+    <div class="modal-overlay" id="modal">
+      <div class="modal">
+        <p>¿Deseas eliminar este inventario permanentemente?</p>
+        <div class="botones">
+          <button onclick="confirmarEliminacion()">Confirmar</button>
+          <button onclick="cerrarModal()">Cancelar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let idAEliminar = "";
+
+    function copiarID(id) {
+      navigator.clipboard.writeText(id);
+      alert(`ID ${id} copiado al portapapeles`);
+    }
+
+    function mostrarConfirmacion(id) {
+      idAEliminar = id;
+      document.getElementById("modal").style.display = "flex";
+    }
+
+    function cerrarModal() {
+      document.getElementById("modal").style.display = "none";
+      idAEliminar = "";
+    }
+
+    function confirmarEliminacion() {
+      alert(`El inventario con ID ${idAEliminar} ha sido eliminado (simulado).`);
+      cerrarModal();
+      // Aquí se eliminaría dinámicamente del DOM si se usaran datos reales.
+    }
+  </script>
+</body>
+</html>

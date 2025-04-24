@@ -49,7 +49,8 @@
     const password = this.password.value;
 
     try {
-      const response = await fetch("http://23.23.17.223:3000/login", {
+      const host = window.location.hostname
+      const response = await fetch(`http://${host}/login`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json"

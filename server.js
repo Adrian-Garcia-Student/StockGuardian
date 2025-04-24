@@ -47,6 +47,48 @@ app.post("/login", async (req, res) => {
   }
 });
 
+app.post("/registro", async (req, res) => {
+  const { email, password } = req.body;
+
+  const nuevoUsuario = {
+    Nombre: email,
+    ID_Usuario: generarIDUsuario(),
+    Contraseña: password,
+  };
+
+  try{
+    const comando = new PutCommand({
+      TableName: "Usuarios",
+      Item: nuevoUsuario,
+      ConditionExpression: "attribute_not_exists(Nombre)", //Evita sobreescribir
+    });
+
+    await ddbDocClient.send(comando);
+    res.status(201).json({mensaje: "Usuario registrado con éxito"});
+
+  } catch (error){
+    //El error se genera en attribute_not_exists
+    if (error.name === "ConditionalCheckFailedException") {
+      res.status(409).json({ mensaje: "El usuario ya existe." });
+    } else {
+      //Es otro tipo de error en el sistema.
+      console.error("Error al registrar usuario:", error);
+      res.status(500).json({ mensaje: "Error del servidor al registrar." });
+  }
+}
+});
+
+//Generador de IDs de Usuario Aleatorios
+function generarIDUsuario(longitud = 8) {
+  const caracteres = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+  let id = "";
+  for (let i = 0; i < longitud; i++) {
+    id += caracteres.charAt(Math.floor(Math.random() * caracteres.length));
+  }
+  return id;
+}
+
+
 // Inicia el servidor
 app.listen(port, () => {
   console.log(`Servidor escuchando en http://localhost:${port}`);

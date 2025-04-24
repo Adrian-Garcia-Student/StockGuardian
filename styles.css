@@ -15,10 +15,27 @@ a {
 /* Navbar */
 nav {
   background-color: #010175;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 1000;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  transition: transform 0.7s ease-in-out;
+}
+
+.nav-hidden {
+  transform: translateY(-100%);
+  transition: transform 0.7s ease;
+}
+
+.nav-container {
+  max-width: 1300px;
+  margin: 0 auto;
+  padding: 15px 45px;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 15px 45px;
   flex-wrap: wrap;
 }
 
@@ -67,6 +84,7 @@ nav {
   text-align: center;
   height: 100vh;
   overflow: hidden;
+  padding-top: 100px; /* compensación por la navbar fija */
 }
 
 .fondo-blur {
@@ -169,10 +187,11 @@ nav {
 
 /* Responsive */
 @media (max-width: 768px) {
-  nav {
+  .nav-container {
     flex-direction: column;
     align-items: center;
     text-align: center;
+    padding: 15px 20px;
   }
 
   .nav-left, .nav-right {
@@ -206,4 +225,39 @@ nav {
   .buttons {
     flex-direction: column;
   }
+}
+
+#respuesta {
+  font-size: 26px;
+}
+
+.contacto {
+  margin-top: 40px;
+  padding: 20px;
+  text-align: center;
+}
+
+.contacto h2 {
+  font-size: 24px;
+  margin-bottom: 10px;
+}
+
+.contacto p {
+  font-size: 16px;
+  margin-bottom: 10px;
+}
+
+.social-icons {
+  margin: 10px 0;
+}
+
+.social-icon {
+  width: 40px;
+  height: 40px;
+  margin: 0 10px;
+  transition: transform 0.3s;
+}
+
+.social-icon:hover {
+  transform: scale(1.1);
 }

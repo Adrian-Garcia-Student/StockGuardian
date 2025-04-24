@@ -12,13 +12,15 @@
 <body>
   <!-- Navbar -->
   <nav>
-    <div class="nav-left">
-      <img id="nuestroLogo" src="GuardianIcon.png" alt="Logo de StockGuardian" />
-      <a id="inicio" href="#Inicio">STOCKGUARDIAN</a>
-    </div>
-    <div class="nav-right">
-      <a href="#SobreNosotros" class="nav-btn">Sobre Nosotros</a>
-      <button onclick="window.location.href='login.html'" class="nav-btn">Iniciar Sesión</button>
+    <div class="nav-container">
+      <div class="nav-left">
+        <img id="nuestroLogo" src="GuardianIcon.png" alt="Logo de StockGuardian" />
+        <a id="inicio" href="#Inicio">STOCKGUARDIAN</a>
+      </div>
+      <div class="nav-right">
+        <a href="#SobreNosotros" class="nav-btn">Sobre Nosotros</a>
+        <button onclick="window.location.href='login.html'" class="nav-btn">Iniciar Sesión</button>
+      </div>
     </div>
   </nav>
 
@@ -26,7 +28,7 @@
   <main>
     <!-- Hero section -->
     <section class="hero">
-      <img src="https://placehold.co/1416x774" alt="Fondo" class="fondo-blur">
+      <img src="principal.jpg" alt="Fondo" class="fondo-blur">
       <div class="hero-content">
         <h2>¡Bienvenido a StockGuardian!</h2>
         <p>El lugar ideal para tus inventarios</p>
@@ -39,17 +41,68 @@
       <h2>Sobre Nosotros</h2>
       <div class="content">
         <div class="buttons">
-          <button>¿Quiénes Somos?</button>
-          <button>¿Qué hace este sistema?</button>
-          <button>¿Quién lo puede usar?</button>
+          <button id="btnQuienesSomos">¿Quiénes Somos?</button>
+          <button id="btnQueHaceSistema">¿Qué hace este sistema?</button>
+          <button id="btnQuienLoPuedeUsar">¿Quién lo puede usar?</button>
         </div>
         <div class="descripcion">
-          <p>
-            Somos un equipo de desarrollo pequeño dedicado a crear páginas de gestión y manejo de tareas, recursos e información.
+          <p id="respuesta">
           </p>
         </div>
       </div>
     </section>
+
+    <section id="Contacto" class="contacto">
+      <h2>Contacto</h2>
+      <div class="content">
+        <p>¿Qué esperas? Contáctanos ya a través de nuestras redes sociales o número celular.</p>
+        <div class="social-icons">
+          <a href="https://www.facebook.com" target="_blank">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/5/51/Facebook_f_logo_%282019%29.svg" alt="Facebook" class="social-icon">
+          </a>
+          <a href="https://www.twitter.com" target="_blank">
+            <img src="logotipos.png" alt="Twitter" class="social-icon">
+          </a>
+          <a href="https://www.instagram.com" target="_blank">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/a/a5/Instagram_icon.png" alt="Instagram" class="social-icon">
+          </a>
+        </div>
+        <p><strong>Teléfono:</strong> 81-2904-7282</p>
+      </div>
+    </section>
+
   </main>
+
+  <script>
+    let lastScrollTop = 0;
+    const nav = document.querySelector("nav");
+  
+    window.addEventListener("scroll", function () {
+      let scrollTop = window.scrollY || document.documentElement.scrollTop;
+  
+      if (scrollTop > lastScrollTop) {
+        // Scroll hacia abajo → oculta
+        nav.classList.add("nav-hidden");
+      } else {
+        // Scroll hacia arriba → muestra
+        nav.classList.remove("nav-hidden");
+      }
+      lastScrollTop = scrollTop <= 0 ? 0 : scrollTop;
+    });
+  </script>
+
+<script>
+  document.getElementById('btnQuienesSomos').addEventListener('click', function() {
+    document.getElementById('respuesta').innerHTML = 'Somos un equipo de desarrollo pequeño, dedicado a crear páginas de gestión y manejo de tareas, recursos e información.';
+  });
+
+  document.getElementById('btnQueHaceSistema').addEventListener('click', function() {
+    document.getElementById('respuesta').innerHTML = 'Este sistema le permite crear, importar y exportar tablas de inventario con las que podrá manejar inventarios, consultar datos e invitar a otros usuarios a visualizar la información.';
+  });
+
+  document.getElementById('btnQuienLoPuedeUsar').addEventListener('click', function() {
+    document.getElementById('respuesta').innerHTML = 'STOCKGUARDIAN© es para todos los usuarios que estén empezando a gestionar sus propios proyectos.';
+  });
+</script>
 </body>
 </html>

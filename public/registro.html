@@ -9,29 +9,36 @@
 <body>
   <div class="registro-container">
     <!-- Fondos -->
-    <img src="https://placehold.co/2360x1640" alt="fondo1" class="bg-1">
-    <img src="https://placehold.co/1976x1146" alt="fondo2" class="bg-2">
+    <img src="..." alt="fondo1" class="bg-1">
+    <img src="ImagenRegistro.png" alt="fondo2" class="bg-2">
 
     <!-- Caja blanca -->
     <div class="form-card">
+    <div class="header-registro">
       <!-- Botón regresar -->
       <div class="back-button" onclick="window.location.href='index.html'">&#10094;</div>
 
       <!-- Título -->
       <h2 class="titulo">Registro</h2>
-
+    </div>
       <!-- Formulario -->
       <form id="form-registro">
-        <label>Correo Electrónico *</label>
+        <label>Correo Electrónico <span class="required">*</span></label>
         <input type="email" name="email" placeholder="ejemplo@gmail.com" required>
 
-        <label>Contraseña *</label>
-        <input type="password" name="password" placeholder="Máximo 8 caracteres" maxlength="8" required>
+        <label>Contraseña <span class="required">*</span></label>
+        <div class="password-field">
+          <input type="password" name="password" id="password" placeholder="Máximo 8 caracteres" maxlength="8" required>
+          <span class="toggle-password" onclick="togglePassword('password', this)">👁️</span>
+        </div>
 
-        <label>Confirmar Contraseña *</label>
-        <input type="password" name="confirm" required>
+        <label>Confirmar Contraseña <span class="required">*</span></label>
+        <div class="password-field">
+          <input type="password" name="confirm" id="confirm" required>
+          <span class="toggle-password" onclick="togglePassword('confirm', this)">👁️</span>
+        </div>
 
-        <label>Comida Favorita *</label>
+        <label>Comida Favorita <span class="required">*</span></label>
         <input type="text" name="comida" placeholder="Ingresa tu comida favorita y recuérdala muy bien" required>
 
         <div class="registro-actions">
@@ -54,6 +61,12 @@
         e.preventDefault();
       }
     });
+    function togglePassword(id, el) {
+      const input = document.getElementById(id);
+      const isVisible = input.type === "text";
+      input.type = isVisible ? "password" : "text";
+      el.textContent = isVisible ? "👁️" : "🙈";
+    }
   </script>
 </body>
 </html>

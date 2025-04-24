@@ -42,12 +42,35 @@
   </div>
 
   <script>
-    document.getElementById("form-login").addEventListener("submit", function(e) {
-      e.preventDefault();
-      // Aquí iría la lógica de autenticación
-      alert("Inicio de sesión simulado. Aquí se haría la verificación real.");
-      // window.location.href = "seleccion_usuario.html";
-    });
+  document.getElementById("form-login").addEventListener("submit", async function(e) {
+    e.preventDefault();
+
+    const email = this.email.value;
+    const password = this.password.value;
+
+    try {
+      const response = await fetch("http://23.23.17.223:3000/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ email, password })
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        alert(data.mensaje);
+        return;
+      }
+
+      alert(data.mensaje);
+      window.location.href = "seleccion_usuario.html";
+    } catch (error) {
+      console.error("Error de conexión:", error);
+      alert("No se pudo conectar al servidor.");
+    }
+  });
   </script>
 </body>
 </html>

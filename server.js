@@ -1,7 +1,7 @@
 import express from "express";
 import cors from "cors";
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
-import { GetCommand, DynamoDBDocumentClient } from "@aws-sdk/lib-dynamodb";
+import { GetCommand, PutCommand, DynamoDBDocumentClient } from "@aws-sdk/lib-dynamodb";
 import bodyParser from "body-parser";
 import path from "path";  // Importamos path
 import { fileURLToPath } from "url";  // Para convertir la URL en ruta de archivo

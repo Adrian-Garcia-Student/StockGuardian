@@ -1,147 +1,117 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Vista Administrador - Inventario</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Inventario - Administrador</title>
+  <link rel="stylesheet" href="vista_admin.css">
   <link href="https://fonts.googleapis.com/css2?family=Jost:wght@400;600;700&display=swap" rel="stylesheet">
-  <style>
-    body {
-      font-family: 'Jost', sans-serif;
-      background-color: #020239;
-      margin: 0;
-      padding: 0;
-      color: white;
-    }
-    .container {
-      padding: 40px;
-    }
-    .header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 30px;
-    }
-    .header h1 {
-      font-size: 48px;
-      margin: 0;
-    }
-    .copy-id {
-      background: #143994;
-      padding: 10px 20px;
-      border-radius: 10px;
-      cursor: pointer;
-      font-size: 18px;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-    .copy-id:hover {
-      background: #0f2c6a;
-    }
-    .controls {
-      display: flex;
-      gap: 15px;
-      margin-bottom: 20px;
-    }
-    .controls button {
-      background: #143994;
-      color: white;
-      border: none;
-      padding: 10px 20px;
-      border-radius: 8px;
-      cursor: pointer;
-      font-size: 16px;
-    }
-    .controls button:hover {
-      background: #0f2c6a;
-    }
-    .search-bar {
-      margin-bottom: 20px;
-    }
-    .search-bar input {
-      width: 100%;
-      padding: 12px;
-      border-radius: 8px;
-      border: none;
-      font-size: 16px;
-    }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      background: white;
-      color: black;
-      border-radius: 10px;
-      overflow: hidden;
-    }
-    th, td {
-      padding: 15px;
-      text-align: left;
-      border-bottom: 1px solid #ddd;
-    }
-    th {
-      background-color: #143994;
-      color: white;
-    }
-    tr:hover {
-      background-color: #f5f5f5;
-    }
-  </style>
 </head>
 <body>
-  <div class="container">
-    <div class="header">
-      <h1>Inventario: Llantas y Más</h1>
-      <div class="copy-id" onclick="copyID()">ID: <span id="inventoryID">45TYUY64XS</span> 📋</div>
-    </div>
+  <header class="encabezado">
+    <h1>LATOSOS CO</h1>
+    <img src="https://placehold.co/64x64" alt="Escudo" class="icono-escudo">
+  </header>
 
-    <div class="controls">
-      <button onclick="alert('Función importar en desarrollo')">Importar</button>
-      <button onclick="alert('Función exportar en desarrollo')">Exportar</button>
-      <button onclick="alert('Mostrando historial')">Historial</button>
-    </div>
+  <main class="contenido">
+    <section class="caja-principal">
+      <div class="barra-superior">
+        <button class="btn-regresar" onclick="window.location.href='seleccion_usuario.html'">&#8592;</button>
 
-    <div class="search-bar">
-      <input type="text" id="searchInput" placeholder="Buscar en inventario..." onkeyup="searchTable()">
-    </div>
+        <div class="busqueda">
+          <input type="text" placeholder="Ingrese lo que desee buscar..." id="searchInput" onkeyup="searchTable()">
+          <span class="btn-cerrar">×</span>
+        </div>
 
-    <table id="inventoryTable">
-      <thead>
-        <tr>
-          <th>Nombre</th>
-          <th>Categoría</th>
-          <th>Cantidad</th>
-          <th>Precio</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td>Llanta Goodyear</td>
-          <td>Automotriz</td>
-          <td>20</td>
-          <td>$750</td>
-        </tr>
-        <tr>
-          <td>Rin deportivo</td>
-          <td>Accesorios</td>
-          <td>12</td>
-          <td>$1200</td>
-        </tr>
-        <tr>
-          <td>Filtro de aceite</td>
-          <td>Mantenimiento</td>
-          <td>50</td>
-          <td>$150</td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
+        <div class="acciones">
+          <button>Importar...</button>
+          <button>Exportar...</button>
+          <button>Historial de cambios</button>
+        </div>
+
+        <img src="https://placehold.co/64x64" class="icono-perfil" alt="Perfil">
+      </div>
+
+      <div class="info-inventario">
+        <div>
+          <p><strong>ID del Inventario:</strong></p>
+          <div class="id-contenedor">
+            <span id="inventoryID">45TYUY64XS</span>
+            <button onclick="copiarID()">📋</button>
+          </div>
+        </div>
+        <div>
+          <p><strong>Descripción:</strong></p>
+          <p class="descripcion-texto">
+            El inventario de llantas registra productos disponibles en distintas categorías para venta directa y por encargo.
+            Aquí se gestionan cantidades, rangos aceptables y precios por unidad.
+          </p>
+        </div>
+      </div>
+
+      <div class="tabla-container">
+        <table id="inventoryTable">
+          <thead>
+            <tr>
+              <th>Nombre</th>
+              <th>Categoría</th>
+              <th>Descripción</th>
+              <th>Cantidad</th>
+              <th>Mínima</th>
+              <th>Máxima</th>
+              <th>Precio Unitario</th>
+              <th>Costo Unitario</th>
+              <th>Unidad</th>
+              <th>Código de Barras</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Llanta Goodyear</td>
+              <td>Automotriz</td>
+              <td>Llanta de alto rendimiento</td>
+              <td>20</td>
+              <td>10</td>
+              <td>100</td>
+              <td>$750</td>
+              <td>$500</td>
+              <td>Pieza</td>
+              <td>7501031300072</td>
+            </tr>
+            <tr>
+              <td>Rin deportivo</td>
+              <td>Accesorios</td>
+              <td>Rin aluminio 16”</td>
+              <td>12</td>
+              <td>5</td>
+              <td>50</td>
+              <td>$1200</td>
+              <td>$950</td>
+              <td>Pieza</td>
+              <td>7501234567890</td>
+            </tr>
+            <tr>
+              <td>Filtro de aceite</td>
+              <td>Mantenimiento</td>
+              <td>Filtro motor estándar</td>
+              <td>50</td>
+              <td>20</td>
+              <td>200</td>
+              <td>$150</td>
+              <td>$100</td>
+              <td>Pieza</td>
+              <td>7509999999999</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </main>
 
   <script>
-    function copyID() {
+    function copiarID() {
       const id = document.getElementById('inventoryID').innerText;
       navigator.clipboard.writeText(id);
-      alert("ID copiado: " + id);
     }
 
     function searchTable() {
@@ -154,7 +124,7 @@
         let visible = false;
         const td = tr[i].getElementsByTagName("td");
         for (let j = 0; j < td.length; j++) {
-          if (td[j].innerText.toLowerCase().indexOf(filter) > -1) {
+          if (td[j].innerText.toLowerCase().includes(filter)) {
             visible = true;
             break;
           }

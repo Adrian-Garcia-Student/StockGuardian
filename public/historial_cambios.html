@@ -7,6 +7,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Jost:wght@400;600;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="historial_cambios.css" />
 </head>
+
 <body>
   <div class="container">
     <img src="https://placehold.co/2194x1524" class="bg-img1" alt="fondo1" />
@@ -16,21 +17,58 @@
       <div class="volver" onclick="window.location.href='vista-admin.html'">&#10094;</div>
       <div class="titulo">Historial de cambios</div>
       <div class="historial-box">
-        <div class="historial-entry">
-          <span>Se han creado 5 filas</span>
-          <span>01/04/2025</span>
-        </div>
-        <div class="historial-entry">
-          <span>Datos modificados en Nombre</span>
-          <span>28/03/2025</span>
-        </div>
-        <div class="historial-entry">
-          <span>Se han borrado 2 filas</span>
-          <span>28/03/2025</span>
-        </div>
-        <!-- Puedes seguir agregando más entradas aquí -->
+        <table class="historial-table">
+          <thead>
+            <tr>
+                <th>ID_Historial</th>
+                <th>Columna_Afectada</th>
+                <th>Fecha_Accion</th>
+                <th>ID_Inventario</th>
+                <th>ID_Usuario</th>
+                <th>Tipo_Accion</th>
+            </tr>
+            </thead>
+            <tbody id="historial-body">
+            <!-- Las filas se llenarán dinámicamente con JS -->
+          </tbody>
+        </table>
       </div>
     </div>
   </div>
+  <script>
+    const historialBody = document.getElementById('historial-body');
+  
+    const cambios = [
+      {
+        id: 0,
+        columna: "Nombre",
+        fecha: "01/04/25",
+        inventario: "INV123",
+        usuario: "NULL",
+        tipo: "MODIFICACION"
+      },
+      {
+        id: 1,
+        columna: "NULL",
+        fecha: "30/03/25",
+        inventario: "INV123",
+        usuario: "NULL",
+        tipo: "AGREGAR"
+      }
+    ];
+  
+    cambios.forEach(cambio => {
+      const row = document.createElement('tr');
+      row.innerHTML = `
+        <td>${cambio.id}</td>
+        <td>${cambio.columna}</td>
+        <td>${cambio.fecha}</td>
+        <td>${cambio.inventario}</td>
+        <td>${cambio.usuario}</td>
+        <td>${cambio.tipo}</td>
+      `;
+      historialBody.appendChild(row);
+    });
+  </script>  
 </body>
 </html>

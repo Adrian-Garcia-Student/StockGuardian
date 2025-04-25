@@ -151,6 +151,7 @@
 
     function eliminarFila(boton) {
     const fila = boton.closest("tr");
+    registrarCambioHistorial(null, "ELIMINAR");
     fila.remove();
   }
 
@@ -192,6 +193,7 @@
           });
           // Agregar nueva fila vacía
           agregarFila();
+          registrarCambioHistorial(null, "AGREGAR");
         }
       });
     });
@@ -213,12 +215,13 @@
 
         input.addEventListener("keydown", function (e) {
           if (e.key === "Enter") {
+            if (input.value.trim() !== valorOriginal.trim()) {
+              const th = celda.closest("table").querySelectorAll("th")[celda.cellIndex];
+              const nombreColumna = th ? th.innerText : null;
+              registrarCambioHistorial(nombreColumna, "MODIFICACION");
+            }
             celda.textContent = input.value.trim();
           }
-        });
-
-        input.addEventListener("blur", function () {
-          celda.textContent = input.value.trim();
         });
       }
     });
@@ -251,71 +254,93 @@
     }
   }
 
-  // Encabezados definidos manualmente
-  const encabezado = [
-    "ID Producto", "Nombre", "Categoría", "Descripción",
-    "Cantidad", "Mínima", "Máxima",
-    "Precio Unitario", "Costo Unitario", "Unidad", "Código de Barras"
-  ].join(",");
+    // Encabezados definidos manualmente
+    const encabezado = [
+      "ID Producto", "Nombre", "Categoría", "Descripción",
+      "Cantidad", "Mínima", "Máxima",
+      "Precio Unitario", "Costo Unitario", "Unidad", "Código de Barras"
+    ].join(",");
 
-  const contenidoCSV = [encabezado, ...csv].join("\n");
-  const blob = new Blob([contenidoCSV], { type: "text/csv" });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = "inventario.csv";
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-}
-
-
-function importarCSV(event) {
-  const archivo = event.target.files[0];
-  if (!archivo || !archivo.name.endsWith(".csv")) {
-    alert("Por favor selecciona un archivo CSV válido.");
-    return;
+    const contenidoCSV = [encabezado, ...csv].join("\n");
+    const blob = new Blob([contenidoCSV], { type: "text/csv" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "inventario.csv";
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    registrarCambioHistorial(null, "EXPORTAR");
   }
 
-  const reader = new FileReader();
-  reader.onload = function (e) {
-    const contenido = e.target.result.trim();
-    const lineas = contenido.split("\n");
 
-    const columnasEsperadas = 11;
-    const tabla = document.getElementById("inventoryTable");
-    const tbody = tabla.querySelector("tbody");
-
-    // Eliminar todas las filas excepto la del botón ➕
-    const filas = Array.from(tbody.querySelectorAll("tr"));
-    filas.forEach(f => {
-      if (!f.querySelector("button[onclick*='agregarFila']")) f.remove();
-    });
-
-    for (let i = 1; i < lineas.length; i++) {
-      const linea = lineas[i];
-      const datos = linea.split(",").map(d => d.replace(/"/g, "").trim());
-      if (datos.length === 12 && datos[0] === "") datos.shift(); // Quita la celda vacía
-
-
-      if (datos.length !== columnasEsperadas) {
-        alert("El archivo no tiene el formato correcto. Se esperaban 11 columnas por fila.");
-        return;
-      }
-
-      const nuevaFila = document.createElement("tr");
-      nuevaFila.innerHTML = `
-        <td><button onclick="eliminarFila(this)">❌</button></td>
-        ${datos.map(d => `<td>${d}</td>`).join("")}
-      `;
-      tbody.insertBefore(nuevaFila, tbody.lastElementChild);
+  function importarCSV(event) {
+    const archivo = event.target.files[0];
+    if (!archivo || !archivo.name.endsWith(".csv")) {
+      alert("Por favor selecciona un archivo CSV válido.");
+      return;
     }
 
-    event.target.value = "";
-  };
+    const reader = new FileReader();
+    reader.onload = function (e) {
+      const contenido = e.target.result.trim();
+      const lineas = contenido.split("\n");
 
-  reader.readAsText(archivo);
-}
+      const columnasEsperadas = 11;
+      const tabla = document.getElementById("inventoryTable");
+      const tbody = tabla.querySelector("tbody");
+
+      // Eliminar todas las filas excepto la del botón ➕
+      const filas = Array.from(tbody.querySelectorAll("tr"));
+      filas.forEach(f => {
+        if (!f.querySelector("button[onclick*='agregarFila']")) f.remove();
+      });
+
+      for (let i = 1; i < lineas.length; i++) {
+        const linea = lineas[i];
+        const datos = linea.split(",").map(d => d.replace(/"/g, "").trim());
+        if (datos.length === 12 && datos[0] === "") datos.shift(); // Quita la celda vacía
+
+
+        if (datos.length !== columnasEsperadas) {
+          alert("El archivo no tiene el formato correcto. Se esperaban 11 columnas por fila.");
+          return;
+        }
+
+        const nuevaFila = document.createElement("tr");
+        nuevaFila.innerHTML = `
+          <td><button onclick="eliminarFila(this)">❌</button></td>
+          ${datos.map(d => `<td>${d}</td>`).join("")}
+        `;
+        tbody.insertBefore(nuevaFila, tbody.lastElementChild);
+      }
+
+      event.target.value = "";
+    };
+
+    reader.readAsText(archivo);
+    registrarCambioHistorial(null, "IMPORTAR");
+  }
+  // Función para obtener fecha en formato DD/MM/YY
+  function obtenerFechaActual() {
+    const hoy = new Date();
+    return hoy.toLocaleDateString("es-ES");
+  }
+
+  // Función para guardar un nuevo cambio en localStorage
+  function registrarCambioHistorial(columna, tipoAccion) {
+    const historial = JSON.parse(localStorage.getItem("historialCambios")) || [];
+    const nuevoCambio = {
+      id: historial.length,
+      columna_afectada: columna || null,
+      fecha_accion: obtenerFechaActual(),
+      id_inventario: document.getElementById("inventoryID").innerText.trim(),
+      id_usuario: null, // se puede actualizar más adelante si se tiene login
+      tipo_accion: tipoAccion
+    };
+    historial.push(nuevoCambio);
+    localStorage.setItem("historialCambios", JSON.stringify(historial));
+  }
 
 
   </script>

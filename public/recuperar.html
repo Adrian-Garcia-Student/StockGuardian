@@ -41,7 +41,7 @@
       const host = window.location.hostname;
   
       try {
-        const response = await fetch(`http://${host}:80/verificar-usuario`, {
+        const response = await fetch(`http://${host}:3000/verificar-usuario`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json"

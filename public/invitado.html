@@ -125,7 +125,7 @@
   async function cargarInventarioPorID(idInventario) {
     try {
       const host = window.location.hostname;
-      const response = await fetch(`http://${host}:80/inventario/${idInventario}`, {
+      const response = await fetch(`http://${host}:3000/inventario/${idInventario}`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json"

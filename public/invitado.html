@@ -123,7 +123,7 @@
   async function cargarInventarioPorID(idInventario) {
     try {
       const host = window.location.hostname;
-      const response = await fetch(`http://${host}:3000/inventario${idInventario}`, {
+      const response = await fetch(`http://${host}:3000/inventario/${idInventario}`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json"
@@ -169,7 +169,7 @@
     }   
     //Cargar el inventario
     window.onload = () => {
-      cargarInventario("0-A");
+      cargarInventarioPorID("0-A");
     };
     </script>
     

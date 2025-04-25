@@ -36,7 +36,7 @@ app.post("/login", async (req, res) => {
 
     const resultado = await ddbDocClient.send(comando);
 
-    if (!resultado.Item || resultado.Item.Contraseña !== password) {
+    if (!resultado.Item || resultado.Item.Contrasena !== password) {
       return res.status(401).json({ mensaje: "Usuario o contraseña incorrectos." });
     }
 
@@ -56,7 +56,7 @@ app.post("/registro", async (req, res) => {
   const nuevoUsuario = {
     Nombre: email,
     ID_Usuario: generarID(),
-    Contraseña: password,
+    Contrasena: password,
     Comida: comida,
   };
 
@@ -64,7 +64,7 @@ app.post("/registro", async (req, res) => {
     const comando = new PutCommand({
       TableName: "Usuarios",
       Item: nuevoUsuario,
-      ConditionExpression: "attribute_not_exists(Nombre)", // Evita sobreescribir
+      ConditionExpression: "attribute_not_exists(Nombre)", //Evitar sobreescribir
     });
 
     await ddbDocClient.send(comando);
@@ -95,7 +95,6 @@ app.post("/verificar-usuario", async (req, res) => {
       return res.status(404).json({ mensaje: "Usuario no encontrado." });
     }
 
-    // El usuario existe
     res.status(200).json({ mensaje: "Usuario encontrado." });
   } catch (error) {
     console.error("Error al verificar usuario:", error);
@@ -125,7 +124,7 @@ app.post("/validar-comida", async (req, res) => {
     const comandoUpdate = new UpdateCommand({
       TableName: "Usuarios",
       Key: { Nombre: email },
-      UpdateExpression: "SET Contraseña = :nueva",
+      UpdateExpression: "SET Contrasena = :nueva",
       ExpressionAttributeValues: {
         ":nueva": nuevaContraseña
       }

@@ -60,7 +60,7 @@
         alert("Las contraseñas no coinciden.");
       } else {
           const host = window.location.hostname
-          const response = await fetch(`http://${host}:3000/registro`, {
+          const response = await fetch(`http://${host}:80/registro`, {
             method: "POST",
             headers: {
               "Content-Type": "application/json"

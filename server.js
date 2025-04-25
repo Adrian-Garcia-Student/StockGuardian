@@ -7,7 +7,7 @@ import path from "path";  // Importamos path
 import { fileURLToPath } from "url";  // Para convertir la URL en ruta de archivo
 
 const app = express();
-const port = 3000;
+const port = 80;
 
 // Obtener el directorio actual (equivalente a __dirname en módulos ES)
 const __filename = fileURLToPath(import.meta.url);

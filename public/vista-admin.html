@@ -54,6 +54,7 @@
         <table id="inventoryTable">
           <thead>
               <tr>
+                <th></th> <!-- Columna para eliminar -->
                 <th>ID Producto</th>
                 <th>Nombre</th>
                 <th>Categoría</th>
@@ -69,6 +70,7 @@
           </thead>
           <tbody>
             <tr>
+              <td><button onclick="eliminarFila(this)">❌</button></td>
               <td>2764238746923</td>
               <td>Llanta Goodyear</td>
               <td>Automotriz</td>
@@ -82,6 +84,7 @@
               <td>7501031300072</td>
             </tr>
             <tr>
+              <td><button onclick="eliminarFila(this)">❌</button></td>
               <td>19630273977977</td>
               <td>Rin deportivo</td>
               <td>Accesorios</td>
@@ -95,6 +98,7 @@
               <td>7501234567890</td>
             </tr>
             <tr>
+              <td><button onclick="eliminarFila(this)">❌</button></td>
               <td>71236436737376</td>
               <td>Filtro de aceite</td>
               <td>Mantenimiento</td>
@@ -106,6 +110,12 @@
               <td>$100</td>
               <td>Pieza</td>
               <td>7509999999999</td>
+            </tr>
+            <tr>
+              <td>
+                <button onclick="agregarFila()">➕</button>
+              </td>
+              <td colspan="11"></td>
             </tr>
           </tbody>
         </table>
@@ -137,6 +147,31 @@
         tr[i].style.display = visible ? "" : "none";
       }
     }
+
+    function eliminarFila(boton) {
+    const fila = boton.closest("tr");
+    fila.remove();
+  }
+
+    function agregarFila() {
+      const tabla = document.getElementById("inventoryTable").getElementsByTagName("tbody")[0];
+      const nuevaFila = document.createElement("tr");
+      nuevaFila.innerHTML = `
+        <td><button onclick="eliminarFila(this)">❌</button></td>
+        <td><input type="text" /></td>
+        <td><input type="text" /></td>
+        <td><input type="text" /></td>
+        <td><input type="number" /></td>
+        <td><input type="number" /></td>
+        <td><input type="number" /></td>
+        <td><input type="text" /></td>
+        <td><input type="text" /></td>
+        <td><input type="text" /></td>
+        <td><input type="text" /></td>
+      `;
+      tabla.insertBefore(nuevaFila, tabla.lastElementChild);
+    }
+
   </script>
 </body>
 </html>

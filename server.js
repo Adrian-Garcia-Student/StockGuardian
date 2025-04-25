@@ -1,7 +1,7 @@
 import express from "express";
 import cors from "cors";
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
-import { GetCommand, PutCommand, DynamoDBDocumentClient } from "@aws-sdk/lib-dynamodb";
+import { GetCommand, PutCommand, UpdateCommand, DeleteCommand, DynamoDBDocumentClient } from "@aws-sdk/lib-dynamodb";
 import bodyParser from "body-parser";
 import path from "path";  // Importamos path
 import { fileURLToPath } from "url";  // Para convertir la URL en ruta de archivo
@@ -55,7 +55,7 @@ app.post("/registro", async (req, res) => {
 
   const nuevoUsuario = {
     Nombre: email,
-    ID_Usuario: generarIDUsuario(),
+    ID_Usuario: generarID(),
     Contraseña: password,
   };
 
@@ -81,8 +81,60 @@ app.post("/registro", async (req, res) => {
 }
 });
 
-//Generador de IDs de Usuario Aleatorios
-function generarIDUsuario(longitud = 8) {
+app.post("/inventario", async (req, res) => {
+  const { nombre, descripcion, creadorID } = req.body;
+
+  if (!nombre || !descripcion || !creadorID) {
+    return res.status(400).json({ mensaje: "Faltan campos obligatorios." });
+  }
+
+  const nuevoInventario = {
+    ID_Inventario: generarIDInventario(),
+    ID_Creador: creadorID,
+    Nombre: nombre,
+    Descripción: descripcion,
+    Productos: [], // inicializado vacío
+  };
+
+  try {
+    const comando = new PutCommand({
+      TableName: "Inventario",
+      Item: nuevoInventario,
+      ConditionExpression: "attribute_not_exists(ID_Inventario)", // evita sobrescribir
+    });
+
+    await ddbDocClient.send(comando);
+    res.status(201).json({ mensaje: "Inventario creado con éxito", ID_Inventario: nuevoInventario.ID_Inventario });
+  } catch (error) {
+    console.error("Error al crear inventario:", error);
+    res.status(500).json({ mensaje: "Error del servidor al crear inventario." });
+  }
+});
+
+app.get("/inventario:id", async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const comando = new GetCommand({
+      TableName: "Inventario",
+      Key: { ID_Inventario: id },
+    });
+
+    const resultado = await ddbDocClient.send(comando);
+
+    if (!resultado.Item) {
+      return res.status(404).json({ mensaje: "Inventario no encontrado." });
+    }
+
+    res.json(resultado.Item);
+  } catch (error) {
+    console.error("Error al obtener inventario:", error);
+    res.status(500).json({ mensaje: "Error del servidor al obtener inventario." });
+  }
+});
+
+//Generador de IDs de aleatorios
+function generarID(longitud = 8) {
   const caracteres = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
   let id = "";
   for (let i = 0; i < longitud; i++) {

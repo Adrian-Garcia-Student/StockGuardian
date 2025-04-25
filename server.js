@@ -51,35 +51,35 @@ app.post("/login", async (req, res) => {
 });
 
 app.post("/registro", async (req, res) => {
-  const { email, password } = req.body;
+  const { email, password, comida } = req.body;
 
   const nuevoUsuario = {
     Nombre: email,
     ID_Usuario: generarID(),
     Contraseña: password,
+    Comida: comida,
   };
 
-  try{
+  try {
     const comando = new PutCommand({
       TableName: "Usuarios",
       Item: nuevoUsuario,
-      ConditionExpression: "attribute_not_exists(Nombre)", //Evita sobreescribir
+      ConditionExpression: "attribute_not_exists(Nombre)", // Evita sobreescribir
     });
 
     await ddbDocClient.send(comando);
-    res.status(201).json({mensaje: "Usuario registrado con éxito"});
+    res.status(201).json({ mensaje: "Usuario registrado con éxito" });
 
-  } catch (error){
-    //El error se genera en attribute_not_exists
+  } catch (error) {
     if (error.name === "ConditionalCheckFailedException") {
       res.status(409).json({ mensaje: "El usuario ya existe." });
     } else {
-      //Es otro tipo de error en el sistema.
       console.error("Error al registrar usuario:", error);
       res.status(500).json({ mensaje: "Error del servidor al registrar." });
+    }
   }
-}
 });
+
 
 app.post("/inventario", async (req, res) => {
   const { nombre, descripcion, creadorID } = req.body;

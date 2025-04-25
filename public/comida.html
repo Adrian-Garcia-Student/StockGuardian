@@ -38,8 +38,8 @@
       e.preventDefault();
   
       const comida = e.target.comida.value.trim();
-      const email = localStorage.getItem("emailTemp");
-      const nuevaContraseña = localStorage.getItem("passTemp");
+      const email = localStorage.getItem("email_recuperacion");
+      const nuevaContraseña = localStorage.getItem("nueva_contraseña");
   
       if (!email || !nuevaContraseña) {
         alert("No se encontraron datos para validar. Reintenta el proceso.");

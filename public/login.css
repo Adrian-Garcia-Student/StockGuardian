@@ -29,6 +29,7 @@ body {
   border-radius: 30px;
   box-shadow: 0px 10px 100px rgba(0, 0, 0, 0.25);
   padding: 30px;
+  height: 500px;
   box-sizing: border-box;
 }
 
@@ -69,14 +70,14 @@ form input {
 
 .form-actions {
   display: flex;
-  flex-direction: column;
-  gap: 10px;
-  align-items: flex-start;
-  margin-top: 20px;
+  justify-content: space-between; /* Para distribuir elementos a izquierda y derecha */
+  align-items: center;
+  margin-top: 0px;
+  flex-wrap: wrap;
 }
 
 .link {
-  font-size: 1rem;
+  font-size: 1.3rem;
   color: #577AD4;
   text-decoration: underline;
   font-weight: 600;
@@ -85,25 +86,26 @@ form input {
 button[type="submit"] {
   background-color: #143994;
   color: #F5F5F5;
-  font-size: 1rem;
+  font-size: 1.3rem;
   font-weight: 600;
   padding: 12px 32px;
   border: none;
   border-radius: 8px;
   cursor: pointer;
-  align-self: flex-end;
+  /* Esto lo alinea a la derecha naturalmente con justify-content: space-between */
 }
 
 .registro-link {
   text-align: center;
-  margin-top: 20px;
-  font-size: 1rem;
-  color: #1E1E1E;
+  width: 100%;
+  margin-top: 0px;
+  font-size: 1.3rem;
+  color: black;
 }
 
-.registro-link a {
+.blue-link {
   color: #577AD4;
-  text-decoration: underline;
+  text-decoration: underline; /* Esto elimina el subrayado si lo prefieres */
   font-weight: 600;
 }
 
@@ -133,43 +135,5 @@ button[type="submit"] {
     font-size: 16px;
     border-radius: 8px;
     border: 1px solid #D9D9D9;
-  }
-  
-  .form-actions {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-top: 20px;
-  }
-  
-  .link {
-    font-size: 25px;
-    color: #577AD4;
-    text-decoration: underline;
-    font-weight: 600;
-  }
-  
-  button[type="submit"] {
-    background-color: #143994;
-    color: #F5F5F5;
-    font-size: 24px;
-    font-weight: 600;
-    padding: 12px 32px;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-  }
-  
-  .registro-link {
-    text-align: center;
-    margin-top: 20px;
-    font-size: 33px;
-    color: #1E1E1E;
-  }
-  
-  .registro-link a {
-    color: #577AD4;
-    text-decoration: underline;
-    font-weight: 600;
   }
 }

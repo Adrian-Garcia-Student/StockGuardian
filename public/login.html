@@ -1,34 +1,29 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Iniciar Sesión | StockGuardian</title>
   <link rel="stylesheet" href="login.css" />
 </head>
 <body>
   <div class="login-container">
     <!-- Fondos -->
-    <img src="Almacenes.png" alt="fondo1" class="bg-1">
-    <img src="guardianmaskLogo.png" alt="fondo2" class="bg-2">
+    <img src="Almacenes.png" alt="fondo1" class="bg-1" />
+    <img src="guardianmaskLogo.png" alt="fondo2" class="bg-2" />
 
-    <!-- Caja del formulario -->
+    <!-- Formulario -->
     <div class="form-card">
-      <!-- Botón regresar -->
       <div class="back-button" onclick="window.location.href='index.html'">&#10094;</div>
-
-      <!-- Título -->
       <h2 class="titulo">Inicia Sesión</h2>
 
-      <!-- Formulario -->
       <form id="form-login">
         <label>Correo Electrónico *</label>
-        <input type="email" name="email" placeholder="ejemplo@gmail.com" required>
+        <input type="email" name="email" placeholder="Ejemplo@gmail.com" required />
 
         <label>Contraseña *</label>
-        <input type="password" name="password" placeholder="Máximo 8 caracteres" maxlength="8" required>
+        <input type="password" name="password" placeholder="Máximo 8 caracteres" maxlength="8" required />
 
-        <!-- Acciones -->
         <div class="form-actions">
           <a href="recuperar.html" class="link">¿Olvidó su Contraseña?</a>
           <button type="submit">Iniciar Sesión</button>
@@ -42,36 +37,36 @@
   </div>
 
   <script>
-  document.getElementById("form-login").addEventListener("submit", async function(e) {
-    e.preventDefault();
+    document.getElementById("form-login").addEventListener("submit", async function (e) {
+      e.preventDefault();
 
-    const email = this.email.value;
-    const password = this.password.value;
+      const email = this.email.value;
+      const password = this.password.value;
 
-    try {
-      const host = window.location.hostname
-      const response = await fetch(`http://${host}:3000/login`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({ email, password })
-      });
+      try {
+        const host = window.location.hostname;
+        const response = await fetch(`http://${host}:3000/login`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({ email, password })
+        });
 
-      const data = await response.json();
+        const data = await response.json();
 
-      if (!response.ok) {
+        if (!response.ok) {
+          alert(data.mensaje);
+          return;
+        }
+
         alert(data.mensaje);
-        return;
+        window.location.href = "seleccion_usuario.html";
+      } catch (error) {
+        console.error("Error de conexión:", error);
+        alert("No se pudo conectar al servidor.");
       }
-
-      alert(data.mensaje);
-      window.location.href = "seleccion_usuario.html";
-    } catch (error) {
-      console.error("Error de conexión:", error);
-      alert("No se pudo conectar al servidor.");
-    }
-  });
+    });
   </script>
 </body>
 </html>

@@ -14,18 +14,22 @@
 
     <!-- Caja del formulario -->
     <div class="form-card">
+
+      <div class="header-recuperar">
       <!-- Botón regresar -->
       <div class="back-button" onclick="window.location.href='login.html'">&#10094;</div>
 
       <!-- Título -->
       <h2 class="titulo">Recuperar contraseña</h2>
-
+    </div>
       <!-- Formulario -->
       <form id="form-recuperar">
-        <label>Correo Electrónico *</label>
+        <label>Correo Electrónico <span class="required">*</span></label>
+
         <input type="email" name="email" placeholder="ejemplo@gmail.com" required>
 
-        <label>Nueva Contraseña *</label>
+        <label>Nueva Contraseña <span class="required">*</span></label>
+
         <input type="password" name="newPassword" placeholder="Máximo 8 caracteres" maxlength="8" required>
 
         <!-- Botón confirmar -->

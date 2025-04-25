@@ -24,8 +24,9 @@
         </div>
 
         <div class="acciones"> 
-          <button>Importar...</button>
-          <button>Exportar...</button>
+          <button onclick="document.getElementById('importCSV').click()">Importar...</button>
+          <input type="file" id="importCSV" accept=".csv" style="display: none;" onchange="importarCSV(event)">
+          <button onclick="exportarCSV()">Exportar...</button>
           <button onclick="window.location.href='historial_cambios.html'">Historial de cambios</button>
 
         </div>
@@ -222,6 +223,100 @@
       }
     });
   });
+
+  function exportarCSV() {
+  const tabla = document.getElementById("inventoryTable");
+  let csv = [];
+  const filas = tabla.querySelectorAll("tbody tr");
+
+  for (let fila of filas) {
+    // Ignorar la fila del botón ➕
+    if (fila.querySelector("button[onclick*='agregarFila']")) continue;
+
+    const celdas = fila.querySelectorAll("td");
+    let filaCSV = [];
+
+    for (let i = 1; i < celdas.length; i++) { // empieza desde 1 para saltar la celda de eliminar
+      const celda = celdas[i];
+      const input = celda.querySelector("input");
+      if (input) {
+        filaCSV.push(`"${input.value.trim()}"`);
+      } else {
+        filaCSV.push(`"${celda.textContent.trim()}"`);
+      }
+    }
+
+    if (filaCSV.length > 0) {
+      csv.push(filaCSV.join(","));
+    }
+  }
+
+  // Encabezados definidos manualmente
+  const encabezado = [
+    "ID Producto", "Nombre", "Categoría", "Descripción",
+    "Cantidad", "Mínima", "Máxima",
+    "Precio Unitario", "Costo Unitario", "Unidad", "Código de Barras"
+  ].join(",");
+
+  const contenidoCSV = [encabezado, ...csv].join("\n");
+  const blob = new Blob([contenidoCSV], { type: "text/csv" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "inventario.csv";
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+}
+
+
+function importarCSV(event) {
+  const archivo = event.target.files[0];
+  if (!archivo || !archivo.name.endsWith(".csv")) {
+    alert("Por favor selecciona un archivo CSV válido.");
+    return;
+  }
+
+  const reader = new FileReader();
+  reader.onload = function (e) {
+    const contenido = e.target.result.trim();
+    const lineas = contenido.split("\n");
+
+    const columnasEsperadas = 11;
+    const tabla = document.getElementById("inventoryTable");
+    const tbody = tabla.querySelector("tbody");
+
+    // Eliminar todas las filas excepto la del botón ➕
+    const filas = Array.from(tbody.querySelectorAll("tr"));
+    filas.forEach(f => {
+      if (!f.querySelector("button[onclick*='agregarFila']")) f.remove();
+    });
+
+    for (let i = 1; i < lineas.length; i++) {
+      const linea = lineas[i];
+      const datos = linea.split(",").map(d => d.replace(/"/g, "").trim());
+      if (datos.length === 12 && datos[0] === "") datos.shift(); // Quita la celda vacía
+
+
+      if (datos.length !== columnasEsperadas) {
+        alert("El archivo no tiene el formato correcto. Se esperaban 11 columnas por fila.");
+        return;
+      }
+
+      const nuevaFila = document.createElement("tr");
+      nuevaFila.innerHTML = `
+        <td><button onclick="eliminarFila(this)">❌</button></td>
+        ${datos.map(d => `<td>${d}</td>`).join("")}
+      `;
+      tbody.insertBefore(nuevaFila, tbody.lastElementChild);
+    }
+
+    event.target.value = "";
+  };
+
+  reader.readAsText(archivo);
+}
+
 
   </script>
 </body>

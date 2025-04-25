@@ -17,57 +17,43 @@
       <div class="volver" onclick="window.location.href='vista-admin.html'">&#10094;</div>
       <div class="titulo">Historial de cambios</div>
       <div class="historial-box">
-        <table class="historial-table">
+        <table class="tabla-historial">
           <thead>
             <tr>
-                <th>ID_Historial</th>
-                <th>Columna_Afectada</th>
-                <th>Fecha_Accion</th>
-                <th>ID_Inventario</th>
-                <th>ID_Usuario</th>
-                <th>Tipo_Accion</th>
+              <th>ID_Historial</th>
+              <th>Columna_Afectada</th>
+              <th>Fecha_Accion</th>
+              <th>ID_Inventario</th>
+              <th>ID_Usuario</th>
+              <th>Tipo_Accion</th>
             </tr>
-            </thead>
-            <tbody id="historial-body">
-            <!-- Las filas se llenarán dinámicamente con JS -->
+          </thead>
+          <tbody id="historialBody">
+            <!-- Las filas se insertarán desde JavaScript -->
           </tbody>
         </table>
-      </div>
+      </div>      
     </div>
   </div>
   <script>
-    const historialBody = document.getElementById('historial-body');
-  
-    const cambios = [
-      {
-        id: 0,
-        columna: "Nombre",
-        fecha: "01/04/25",
-        inventario: "INV123",
-        usuario: "NULL",
-        tipo: "MODIFICACION"
-      },
-      {
-        id: 1,
-        columna: "NULL",
-        fecha: "30/03/25",
-        inventario: "INV123",
-        usuario: "NULL",
-        tipo: "AGREGAR"
-      }
-    ];
-  
-    cambios.forEach(cambio => {
-      const row = document.createElement('tr');
-      row.innerHTML = `
-        <td>${cambio.id}</td>
-        <td>${cambio.columna}</td>
-        <td>${cambio.fecha}</td>
-        <td>${cambio.inventario}</td>
-        <td>${cambio.usuario}</td>
-        <td>${cambio.tipo}</td>
-      `;
-      historialBody.appendChild(row);
+      document.addEventListener("DOMContentLoaded", function () {
+      const historial = JSON.parse(localStorage.getItem("historialCambios")) || [];
+      const tbody = document.getElementById("historialBody");
+
+      historial.forEach(entry => {
+        const fila = document.createElement("tr");
+
+        fila.innerHTML = `
+          <td>${entry.id}</td>
+          <td>${entry.columna_afectada || 'NULL'}</td>
+          <td>${entry.fecha_accion}</td>
+          <td>${entry.id_inventario}</td>
+          <td>${entry.id_usuario || 'NULL'}</td>
+          <td>${entry.tipo_accion}</td>
+        `;
+
+        tbody.appendChild(fila);
+      });
     });
   </script>  
 </body>

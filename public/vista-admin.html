@@ -203,28 +203,41 @@
     const tabla = document.getElementById("inventoryTable");
 
     tabla.addEventListener("dblclick", function (e) {
-      const celda = e.target;
-      if (celda.tagName.toLowerCase() === "td" && !celda.querySelector("input")) {
-        const valorOriginal = celda.textContent;
-        const input = document.createElement("input");
-        input.type = "text";
-        input.value = valorOriginal;
-        celda.textContent = "";
-        celda.appendChild(input);
-        input.focus();
+    const celda = e.target;
+    if (celda.tagName.toLowerCase() === "td" && !celda.querySelector("input")) {
+      const valorOriginal = celda.textContent;
+      const input = document.createElement("input");
+      input.type = "text";
+      input.value = valorOriginal;
+      celda.textContent = "";
+      celda.appendChild(input);
+      input.focus();
 
-        input.addEventListener("keydown", function (e) {
-          if (e.key === "Enter") {
-            if (input.value.trim() !== valorOriginal.trim()) {
-              const th = celda.closest("table").querySelectorAll("th")[celda.cellIndex];
-              const nombreColumna = th ? th.innerText : null;
-              registrarCambioHistorial(nombreColumna, "MODIFICACION");
-            }
-            celda.textContent = input.value.trim();
-          }
-        });
-      }
-    });
+      let guardado = false; // ⚠️ Control para evitar doble guardado
+
+      const guardarCambio = () => {
+        const nuevoValor = input.value.trim();
+        if (!guardado && nuevoValor !== valorOriginal.trim()) {
+          guardado = true;
+          const th = celda.closest("table").querySelectorAll("th")[celda.cellIndex];
+          const nombreColumna = th ? th.innerText : null;
+          registrarCambioHistorial(nombreColumna, "MODIFICACION");
+        }
+        celda.textContent = nuevoValor;
+      };
+
+      input.addEventListener("keydown", function (e) {
+        if (e.key === "Enter") {
+          guardarCambio();
+        }
+      });
+
+      input.addEventListener("blur", function () {
+        guardarCambio();
+      });
+    }
+  });
+
   });
 
   function exportarCSV() {

@@ -54,6 +54,7 @@
       const email = form.email.value;
       const password = form.password.value;
       const confirm = form.confirm.value;
+      const comida = form.comida.value;
 
       if (password !== confirm) {
         alert("Las contraseñas no coinciden.");
@@ -64,7 +65,7 @@
             headers: {
               "Content-Type": "application/json"
           },
-          body: JSON.stringify({ email, password })
+          body: JSON.stringify({ email, password, comida })
           });
 
           const data = await response.json();

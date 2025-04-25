@@ -34,12 +34,37 @@
   </div>
 
   <script>
-    document.getElementById("form-comida").addEventListener("submit", function(e) {
+    document.getElementById("form-comida").addEventListener("submit", async function(e) {
       e.preventDefault();
-      // Lógica temporal
-      alert("Validación correcta. Redirigiendo a inicio de sesión...");
-      window.location.href = "login.html";
+  
+      const comida = e.target.comida.value.trim();
+      const email = localStorage.getItem("emailTemp");
+      const nuevaContraseña = localStorage.getItem("passTemp");
+  
+      if (!email || !nuevaContraseña) {
+        alert("No se encontraron datos para validar. Reintenta el proceso.");
+        return window.location.href = "recuperar.html";
+      }
+  
+      const host = window.location.hostname;
+      const response = await fetch(`http://${host}:3000/validar-comida`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, comida, nuevaContraseña })
+      });
+  
+      const data = await response.json();
+  
+      if (response.ok) {
+        alert("Contraseña actualizada exitosamente.");
+        localStorage.removeItem("emailTemp");
+        localStorage.removeItem("passTemp");
+        window.location.href = "login.html";
+      } else {
+        alert(data.mensaje || "Error en la validación.");
+      }
     });
   </script>
+  
 </body>
 </html>

@@ -80,6 +80,68 @@ app.post("/registro", async (req, res) => {
   }
 });
 
+app.post("/verificar-usuario", async (req, res) => {
+  const { email } = req.body;
+
+  try {
+    const comando = new GetCommand({
+      TableName: "Usuarios",
+      Key: { Nombre: email }
+    });
+
+    const resultado = await ddbDocClient.send(comando);
+
+    if (!resultado.Item) {
+      return res.status(404).json({ mensaje: "Usuario no encontrado." });
+    }
+
+    // El usuario existe
+    res.status(200).json({ mensaje: "Usuario encontrado." });
+  } catch (error) {
+    console.error("Error al verificar usuario:", error);
+    res.status(500).json({ mensaje: "Error del servidor al verificar usuario." });
+  }
+});
+
+app.post("/validar-comida", async (req, res) => {
+  const { email, comida, nuevaContraseña } = req.body;
+
+  try {
+    const comandoGet = new GetCommand({
+      TableName: "Usuarios",
+      Key: { Nombre: email }
+    });
+
+    const resultado = await ddbDocClient.send(comandoGet);
+
+    if (!resultado.Item) {
+      return res.status(404).json({ mensaje: "Usuario no encontrado." });
+    }
+
+    if (resultado.Item.Comida !== comida) {
+      return res.status(403).json({ mensaje: "Comida favorita incorrecta." });
+    }
+
+    const comandoUpdate = new UpdateCommand({
+      TableName: "Usuarios",
+      Key: { Nombre: email },
+      UpdateExpression: "SET Contraseña = :nueva",
+      ExpressionAttributeValues: {
+        ":nueva": nuevaContraseña
+      }
+    });
+
+    await ddbDocClient.send(comandoUpdate);
+
+    res.status(200).json({ mensaje: "Contraseña actualizada correctamente." });
+
+  } catch (error) {
+    console.error("Error al validar comida o actualizar contraseña:", error);
+    res.status(500).json({ mensaje: "Error en el servidor." });
+  }
+});
+
+
 
 app.post("/inventario", async (req, res) => {
   const { nombre, descripcion, creadorID } = req.body;

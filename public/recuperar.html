@@ -8,28 +8,21 @@
 </head>
 <body>
   <div class="recuperar-container">
-    <!-- Fondos -->
-    <img src="Almacenes.png" alt="fondo1" class="bg-1">
-    <img src="guardianmaskLogo.png" alt="fondo2" class="bg-2">
-
     <!-- Caja del formulario -->
     <div class="form-card">
-
       <div class="header-recuperar">
-      <!-- Botón regresar -->
-      <div class="back-button" onclick="window.location.href='login.html'">&#10094;</div>
+        <!-- Botón regresar -->
+        <div class="back-button" onclick="window.location.href='login.html'">&#10094;</div>
+        <!-- Título -->
+        <h2 class="titulo">Recuperar contraseña</h2>
+      </div>
 
-      <!-- Título -->
-      <h2 class="titulo">Recuperar contraseña</h2>
-    </div>
       <!-- Formulario -->
       <form id="form-recuperar">
         <label>Correo Electrónico <span class="required">*</span></label>
-
         <input type="email" name="email" placeholder="ejemplo@gmail.com" required>
 
         <label>Nueva Contraseña <span class="required">*</span></label>
-
         <input type="password" name="newPassword" placeholder="Máximo 8 caracteres" maxlength="8" required>
 
         <!-- Botón confirmar -->
@@ -41,7 +34,6 @@
   <script>
     document.getElementById("form-recuperar").addEventListener("submit", function(e) {
       e.preventDefault();
-      // Aquí iría la verificación de correo + redirección
       alert("Contraseña temporalmente actualizada. Ahora se debe validar comida favorita.");
       window.location.href = "comida.html";
     });

@@ -111,7 +111,7 @@ app.post("/inventario", async (req, res) => {
   }
 });
 
-app.get("/inventario:id", async (req, res) => {
+app.get("/inventario/:id", async (req, res) => {
   const { id } = req.params;
 
   try {

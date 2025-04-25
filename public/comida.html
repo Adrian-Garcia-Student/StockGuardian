@@ -8,10 +8,6 @@
 </head>
 <body>
   <div class="comida-container">
-    <!-- Fondos -->
-    <img src="https://placehold.co/2360x1640" alt="fondo1" class="bg-1">
-    <img src="https://placehold.co/1876x1152" alt="fondo2" class="bg-2">
-
     <!-- Caja del formulario -->
     <div class="form-card">
       <!-- Botón regresar -->
@@ -34,12 +30,37 @@
   </div>
 
   <script>
-    document.getElementById("form-comida").addEventListener("submit", function(e) {
+    document.getElementById("form-comida").addEventListener("submit", async function(e) {
       e.preventDefault();
-      // Lógica temporal
-      alert("Validación correcta. Redirigiendo a inicio de sesión...");
-      window.location.href = "login.html";
+
+      const comida = e.target.comida.value.trim();
+      const email = localStorage.getItem("email_recuperacion");
+      const nuevaContraseña = localStorage.getItem("nueva_contraseña");
+
+      if (!email || !nuevaContraseña) {
+        alert("No se encontraron datos para validar. Reintenta el proceso.");
+        return window.location.href = "recuperar.html";
+      }
+
+      const host = window.location.hostname;
+      const response = await fetch(`http://${host}:3000/validar-comida`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, comida, nuevaContraseña })
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        alert("Contraseña actualizada exitosamente.");
+        localStorage.removeItem("emailTemp");
+        localStorage.removeItem("passTemp");
+        window.location.href = "login.html";
+      } else {
+        alert(data.mensaje || "Error en la validación.");
+      }
     });
   </script>
+
 </body>
 </html>

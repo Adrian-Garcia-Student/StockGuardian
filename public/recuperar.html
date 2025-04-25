@@ -32,11 +32,43 @@
   </div>
 
   <script>
-    document.getElementById("form-recuperar").addEventListener("submit", function(e) {
+    document.getElementById("form-recuperar").addEventListener("submit", async function(e) {
       e.preventDefault();
-      alert("Contraseña temporalmente actualizada. Ahora se debe validar comida favorita.");
-      window.location.href = "comida.html";
+  
+      const form = e.target;
+      const email = form.email.value;
+      const newPassword = form.newPassword.value;
+      const host = window.location.hostname;
+  
+      try {
+        const response = await fetch(`http://${host}:3000/verificar-usuario`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({ email })
+        });
+  
+        const data = await response.json();
+  
+        if (!response.ok) {
+          alert(data.mensaje || "Correo no encontrado.");
+          return;
+        }
+  
+        // Guardamos email y nueva contraseña temporalmente
+        localStorage.setItem("email_recuperacion", email);
+        localStorage.setItem("nueva_contraseña", newPassword);
+  
+        alert("Contraseña temporalmente actualizada. Ahora se debe validar comida favorita.");
+        window.location.href = "comida.html";
+  
+      } catch (error) {
+        console.error("Error al verificar correo:", error);
+        alert("Ocurrió un error al verificar el correo. Intenta nuevamente.");
+      }
     });
   </script>
+  
 </body>
 </html>

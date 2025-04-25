@@ -153,24 +153,76 @@
     fila.remove();
   }
 
-    function agregarFila() {
-      const tabla = document.getElementById("inventoryTable").getElementsByTagName("tbody")[0];
-      const nuevaFila = document.createElement("tr");
-      nuevaFila.innerHTML = `
-        <td><button onclick="eliminarFila(this)">❌</button></td>
-        <td><input type="text" /></td>
-        <td><input type="text" /></td>
-        <td><input type="text" /></td>
-        <td><input type="number" /></td>
-        <td><input type="number" /></td>
-        <td><input type="number" /></td>
-        <td><input type="text" /></td>
-        <td><input type="text" /></td>
-        <td><input type="text" /></td>
-        <td><input type="text" /></td>
-      `;
-      tabla.insertBefore(nuevaFila, tabla.lastElementChild);
-    }
+  function agregarFila() {
+    const tabla = document.getElementById("inventoryTable").getElementsByTagName("tbody")[0];
+    const nuevaFila = document.createElement("tr");
+
+    nuevaFila.innerHTML = `
+      <td><button onclick="eliminarFila(this)">❌</button></td>
+      <td><input type="text" /></td>
+      <td><input type="text" /></td>
+      <td><input type="text" /></td>
+      <td><input type="text" /></td>
+      <td><input type="text" /></td>
+      <td><input type="text" /></td>
+      <td><input type="text" /></td>
+      <td><input type="text" /></td>
+      <td><input type="text" /></td>
+      <td><input type="text" /></td>
+      <td><input type="text" /></td>
+    `;
+
+    tabla.insertBefore(nuevaFila, tabla.lastElementChild);
+
+    const inputs = nuevaFila.querySelectorAll("input");
+    inputs.forEach(input => {
+      input.addEventListener("keydown", function (e) {
+        if (e.key === "Enter") {
+          e.preventDefault();
+          const valores = Array.from(inputs).map(i => i.value.trim());
+          if (valores.some(v => v === "")) {
+            alert("Por favor, completa todos los campos antes de guardar.");
+            return;
+          }
+          // Reemplazar inputs por texto plano
+          valores.forEach((valor, index) => {
+            const td = inputs[index].parentElement;
+            td.textContent = valor;
+          });
+          // Agregar nueva fila vacía
+          agregarFila();
+        }
+      });
+    });
+  }
+
+  document.addEventListener("DOMContentLoaded", function () {
+    const tabla = document.getElementById("inventoryTable");
+
+    tabla.addEventListener("dblclick", function (e) {
+      const celda = e.target;
+      if (celda.tagName.toLowerCase() === "td" && !celda.querySelector("input")) {
+        const valorOriginal = celda.textContent;
+        const input = document.createElement("input");
+        input.type = "text";
+        input.value = valorOriginal;
+        celda.textContent = "";
+        celda.appendChild(input);
+        input.focus();
+
+        input.addEventListener("keydown", function (e) {
+          if (e.key === "Enter") {
+            celda.textContent = input.value.trim();
+          }
+        });
+
+        input.addEventListener("blur", function () {
+          celda.textContent = input.value.trim();
+        });
+      }
+    });
+  });
+
 
   </script>
 </body>

@@ -17,6 +17,10 @@ body {
   box-sizing: border-box;
   position: relative;
   width: 100%;
+  background-image: url('LogoConFondo.png');
+  background-position: 285% center; /* Alinea la imagen a la derecha */
+  background-size: 85%; /* Ajusta la imagen al tamaño disponible */
+  background-repeat: no-repeat;
 }
 
 /* TARJETA DE FORMULARIO */

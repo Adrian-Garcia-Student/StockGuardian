@@ -60,13 +60,13 @@
           return;
         }
 
-        alert(data.mensaje);
-        window.location.href = "seleccion_usuario.html";
-      } catch (error) {
-        console.error("Error de conexión:", error);
-        alert("No se pudo conectar al servidor.");
-      }
-    });
+      alert(data.mensaje);
+      window.location.href = "seleccion_usuario.html";
+    } catch (error) {
+      console.error("Error de conexión:", error);
+      alert("No se pudo conectar al servidor.");
+    }
+  });
   </script>
 </body>
 </html>

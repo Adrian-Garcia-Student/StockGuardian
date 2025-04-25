@@ -66,8 +66,8 @@ body {
   }
 
   .icono-busqueda {
-    width: 24px;
-    height: 24px;
+    width: 60px;
+    height: 60px;
     margin-left: 12px;
   }
   
@@ -83,7 +83,7 @@ body {
   
   .btn-cerrar {
     position: absolute;
-    right: 45px; /* antes era 14px */
+    right: 75px; /* antes era 14px */
     font-size: 20px;
     top: 50%;
     transform: translateY(-50%);

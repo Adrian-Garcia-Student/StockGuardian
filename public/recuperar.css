@@ -47,12 +47,16 @@ body {
   
   .back-button {
     font-size: 36px;
-    position: absolute;
-    top: 30px;
-    left: 30px;
     cursor: pointer;
     color: #1E1E1E;
+    position: static;
+    color: #1E1E1E;
   }
+  
+  .required {
+    color: #EC221F; /* rojo fuerte */
+  }
+
   
   .titulo {
     font-size: 48px;
@@ -60,6 +64,15 @@ body {
     color: #000;
     margin-bottom: 30px;
   }
+
+  .header-recuperar {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 30px;
+    margin-left: 20px;
+  }
+  
   
   form {
     display: flex;

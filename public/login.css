@@ -1,5 +1,4 @@
 body {
-<<<<<<< HEAD
   margin: 0;
   font-family: 'Jost', sans-serif;
   background-color: #020239;
@@ -110,63 +109,6 @@ button[type="submit"] {
 
 /* Estilos para pantallas más grandes */
 @media (min-width: 768px) {
-=======
-    margin: 0;
-    font-family: 'Jost', sans-serif;
-    background-color: #020239;
-    overflow: hidden;
-    position: relative;
-    height: 100vh;
-  }
-  
-  .login-container {
-    position: relative;
-    width: 100%;
-    height: 100%;
-  }
-  
-  .bg-1, .bg-2 {
-    position: absolute;
-    opacity: 1;
-    z-index: -2;
-  }
-  
-  .bg-1 {
-    top: -346px;
-    left: 500px;
-    width: 1976px;
-    height: 1640px;
-  }
-  
-  .bg-2 {
-    top: -200px;
-    left: 500px;
-    width: 1976px;
-    height: 1300px;
-  }
-  
-  .form-card {
-    position: absolute;
-    top: 198px;
-    left: 166px;
-    width: 915px;
-    height: 587px;
-    background: white;
-    border-radius: 30px;
-    box-shadow: 0px 10px 100px rgba(0, 0, 0, 0.25);
-    padding: 40px;
-  }
-  
-  .back-button {
-    font-size: 36px;
-    position: absolute;
-    top: 30px;
-    left: 30px;
-    cursor: pointer;
-    color: #1E1E1E;
-  }
-  
->>>>>>> 93f84e5f87a790da33e5eae67119085cad27af68
   .titulo {
     font-size: 48px;
     font-weight: 700;

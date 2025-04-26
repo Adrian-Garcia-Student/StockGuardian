@@ -1,50 +1,53 @@
 body {
     margin: 0;
     font-family: 'Jost', sans-serif;
-    background-color: #eaeaea;
+    background-color: #020239;
+    color: #000;
   }
   
   .encabezado {
     background-color: #020239;
     color: white;
-    text-align: center;
-    padding: 16px;
+    padding: 20px;
     position: relative;
+    text-align: center;
   }
   
   .encabezado h1 {
     margin: 0;
-    font-size: 32px;
+    font-size: 36px;
   }
   
   .icono-escudo {
     position: absolute;
-    top: 12px;
+    top: 16px;
     right: 24px;
-    width: 48px;
-    height: 48px;
+    width: 60px;
+    height: 60px;
   }
   
   .contenido {
     display: flex;
     justify-content: center;
-    padding: 40px 16px;
+    padding: 40px 20px;
   }
   
   .caja-principal {
-    background: white;
+    background-color: white;
     border-radius: 24px;
-    box-shadow: 0 8px 24px rgba(0,0,0,0.2);
     padding: 32px;
+    max-width: 1200px;
     width: 100%;
-    max-width: 1100px;
+    box-shadow: 0 6px 24px rgba(0, 0, 0, 0.2);
   }
   
   .barra-superior {
     display: flex;
     align-items: center;
-    gap: 20px;
+    gap: 16px;
     margin-bottom: 24px;
+    flex-wrap: wrap;
+    justify-content: space-between;
   }
   
   .btn-regresar {
@@ -52,6 +55,7 @@ body {
     background: none;
     border: none;
     cursor: pointer;
+    color: #000;
   }
   
   .busqueda {
@@ -67,17 +71,18 @@ body {
 
   .icono-busqueda {
     width: 60px;
-    height: 60px;
+    height: 70px;
     margin-left: 12px;
   }
   
   .busqueda input {
     width: 100%;
-    padding: 12px 16px;
-    border-radius: 16px;
+    padding: 12px 36px 12px 16px;
+    border-radius: 12px;
     border: 1px solid #ccc;
-    background-color: #f0f0f0;
     font-size: 16px;
+    box-sizing: border-box;
+    font-family: 'Jost', sans-serif;
   }
   
   
@@ -91,8 +96,6 @@ body {
     cursor: pointer;
   }
   
-  
-  
   .info-inventario {
     display: flex;
     gap: 40px;
@@ -104,17 +107,21 @@ body {
     align-items: center;
     gap: 8px;
     font-weight: bold;
-    font-size: 18px;
+    font-size: 16px;
   }
   
   .tabla-container {
     overflow-x: auto;
+    margin-top: 20px;
   }
   
   table {
     width: 100%;
     border-collapse: collapse;
-    margin-top: 16px;
+    background: white;
+    color: black;
+    border-radius: 8px;
+    overflow: hidden;
   }
   
   th, td {
@@ -126,6 +133,7 @@ body {
   th {
     background-color: #143994;
     color: white;
+    font-weight: 600;
   }
   
   .alerta {

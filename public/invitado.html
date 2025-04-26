@@ -16,7 +16,7 @@
       <div class="barra-superior">
         <button class="btn-regresar" onclick="window.location.href='seleccion_usuario.html'">&#8592;</button>
         <div class="busqueda">
-          <input type="text" placeholder="Ingrese lo que desee buscar" id="searchInput" onkeyup="searchTable()" />
+          <input type="text" placeholder="Ingrese lo que desee buscar..." id="searchInput" onkeyup="searchTable()" />
             <img class="icono-busqueda" src="Casco invitado.png" />
             <span class="btn-cerrar">×</span>
           </div>          
@@ -24,14 +24,14 @@
 
       <div class="info-inventario">
         <div>
-          <p class="id-label">ID del Inventario:</p>
+          <p class="id-label"><strong>ID del Inventario:</strong></p>
           <div class="id-contenedor">
             <span id="inventoryID">23DT53Y7U6</span>
             <button onclick="copiarID()">📋</button>
           </div>
         </div>
         <div>
-          <p class="descripcion-label">Descripción:</p>
+          <p class="descripcion-label"><strong>Descripción:</strong></p>
           <p class="descripcion-texto">
             El inventario de latas registra y gestiona el stock disponible para garantizar un control eficiente.
             Contiene datos detallados sobre tipos, cantidades y ubicaciones, facilitando el seguimiento y

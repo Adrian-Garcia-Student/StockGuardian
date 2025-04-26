@@ -71,6 +71,7 @@ body {
     border: 1px solid #ccc;
     font-size: 16px;
     box-sizing: border-box;
+    font-family: 'Jost', sans-serif;
   }
   
   .btn-cerrar {
@@ -99,7 +100,7 @@ body {
   }
   
   .icono-perfil {
-    width: 70x;
+    width: 90px;
     height: 70px;
   }
   

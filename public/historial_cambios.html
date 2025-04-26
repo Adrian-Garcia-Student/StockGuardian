@@ -10,9 +10,6 @@
 
 <body>
   <div class="container">
-    <img src="https://placehold.co/2194x1524" class="bg-img1" alt="fondo1" />
-    <img src="https://placehold.co/1487x991" class="bg-img2" alt="fondo2" />
-
     <div class="panel">
       <div class="volver" onclick="window.location.href='vista-admin.html'">&#10094;</div>
       <div class="titulo">Historial de cambios</div>
@@ -36,7 +33,7 @@
     </div>
   </div>
   <script>
-      document.addEventListener("DOMContentLoaded", function () {
+    document.addEventListener("DOMContentLoaded", function () {
       const historial = JSON.parse(localStorage.getItem("historialCambios")) || [];
       const tbody = document.getElementById("historialBody");
 

@@ -47,6 +47,17 @@
     </div>
   </div>
 
+  <!-- Modal de Error (ID inválido) -->
+  <div class="modal-overlay" id="modal">
+    <div class="modal">
+      <p><strong>¡ID inválido! Por favor ingresa un ID válido.</strong></p>
+      <img src="triste.png" alt="Imagen" class="imagen-modal">
+      <div class="botones">
+        <button onclick="cerrarModal()">Regresar</button>
+      </div>
+    </div>
+  </div>
+
   <script>
     function accederComo(tipo) {
       const id = tipo === 'admin' 
@@ -54,7 +65,7 @@
         : document.getElementById('id-invitado').value.trim();
 
       if (!id) {
-        alert("Por favor ingresa un ID válido.");
+        document.getElementById("modal").style.display = "flex"; // Mostrar modal
         return;
       }
 
@@ -63,6 +74,10 @@
       } else {
         window.location.href = "invitado.html";
       }
+    }
+
+    function cerrarModal() {
+      document.getElementById("modal").style.display = "none";
     }
   </script>
 </body>

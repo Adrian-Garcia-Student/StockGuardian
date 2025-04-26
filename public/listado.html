@@ -8,16 +8,12 @@
 </head>
 <body>
   <div class="listado-container">
-    <!-- Fondos -->
-    <img src="https://placehold.co/2360x1640" class="bg-1" alt="Fondo">
-    <img src="https://placehold.co/1976x1146" class="bg-2" alt="Fondo">
-
     <!-- Panel -->
     <div class="panel">
       <div class="volver" onclick="window.location.href='seleccion_usuario.html'">&#10094;</div>
       <h1 class="titulo">Tus Inventarios</h1>
 
-      <!-- Tabla de Inventarios (simulada) -->
+      <!-- Tabla de Inventarios -->
       <div class="tabla">
         <div class="fila encabezado">
           <span>Nombre</span>
@@ -34,7 +30,7 @@
         </div>
 
         <div class="fila">
-          <span>Latosos Co</span>
+          <span>Latosos co</span>
           <span>982TE76HB1 <button onclick="copiarID('982TE76HB1')">📋</button></span>
           <span>30/03/2025</span>
           <span><button class="eliminar-btn" onclick="mostrarConfirmacion('982TE76HB1')">🗑️</button></span>
@@ -75,7 +71,6 @@
     function confirmarEliminacion() {
       alert(`El inventario con ID ${idAEliminar} ha sido eliminado (simulado).`);
       cerrarModal();
-      // Aquí se eliminaría dinámicamente del DOM si se usaran datos reales.
     }
   </script>
 </body>

@@ -200,24 +200,23 @@ app.get('/verificarinventario/:id', async (req, res) => {
   const { id } = req.params;
 
   try {
-    const comando = new GetCommand({
+    const comando = new QueryCommand({
       TableName: 'DatosInventario',
-      Key: {
-        ID_Inventario: id,
-      },
+      KeyConditionExpression: 'ID_Inventario = :id',
+      ExpressionAttributeValues: {
+        ':id': id
+      }
     });
 
     const resultado = await ddbDocClient.send(comando);
 
-    if (!resultado.Item) {
+    if (!resultado.Items || resultado.Items.length === 0) {
       return res.status(404).json({ error: "Inventario no encontrado" });
     }
 
-    // Devolver info del inventario
-    res.json(resultado.Item);
-    
+    res.json(resultado.Items[0]); //Regresar sólo el primer resultado del query
   } catch (error) {
-    console.error("Error al obtener el inventario:", error);
+    console.error("Error al consultar el inventario:", error);
     res.status(500).json({ error: "Error del servidor" });
   }
 });

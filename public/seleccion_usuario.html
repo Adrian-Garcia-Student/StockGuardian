@@ -60,13 +60,13 @@
 
   <script>
     async function accederComo(tipo) {
-      const creadorID = localStorage.getItem("idUsuario");
-      const id = tipo === 'admin' 
+      const creadorID = localStorage.getItem("idUsuario");  // Obtener el ID del usuario actual
+      const id = tipo === 'admin'
         ? document.getElementById('id-admin').value.trim()
         : document.getElementById('id-invitado').value.trim();
 
       if (!id) {
-        document.getElementById("modal").style.display = "flex"; // Mostrar modal
+        document.getElementById("modal").style.display = "flex"; // Mostrar modal si el ID está vacío
         return;
       }
 
@@ -76,27 +76,27 @@
         const data = await respuesta.json();
 
         if (!data || data.error) {
-          document.getElementById("modal").style.display = "flex";
+          document.getElementById("modal").style.display = "flex"; // Mostrar modal de error si el inventario no existe
           return;
         }
 
-        localStorage.setItem("inventarioActual", data.ID_Inventario);
+        localStorage.setItem("inventarioActual", data.ID_Inventario);  // Guardar el ID del inventario en el localStorage
 
         if (tipo === 'admin') {
           // Verificar si el usuario es el creador del inventario
-          if (data.ID_Creador !== usuarioActual.id) {
+          if (data.ID_Creador !== creadorID) {  // Comparar el ID del creador con el usuario actual
             alert("No tienes permisos para editar este inventario.");
             return;
           }
-          window.location.href = "vista-admin.html";
+          window.location.href = "vista-admin.html";  // Redirigir al administrador si es el creador
         } else {
-          window.location.href = "invitado.html";
+          window.location.href = "invitado.html";  // Redirigir al invitado si solo tiene acceso de lectura
         }
       } catch (error) {
         console.error("Error al verificar el inventario:", error);
         alert("Hubo un problema al verificar el inventario. Intenta nuevamente.");
       }
-      }
+    }
 
       function cerrarModal() {
         document.getElementById("modal").style.display = "none";

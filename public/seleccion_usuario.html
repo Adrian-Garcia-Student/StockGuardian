@@ -72,7 +72,7 @@
 
       try {
         const host = window.location.hostname;
-        const respuesta = await fetch(`http://${host}:3000/verificarInventario/${id}`);
+        const respuesta = await fetch(`http://${host}:3000/verificarinventario/${id}`);
         const data = await respuesta.json();
 
         if (!data || data.error) {

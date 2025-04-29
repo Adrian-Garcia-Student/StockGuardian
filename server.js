@@ -142,7 +142,7 @@ app.post("/validar-comida", async (req, res) => {
 
 
 
-app.post("/inventario", async (req, res) => {
+app.post("/datosinventario", async (req, res) => {
   const { nombre, descripcion, creadorID } = req.body;
 
   if (!nombre || !descripcion || !creadorID) {
@@ -150,7 +150,7 @@ app.post("/inventario", async (req, res) => {
   }
 
   const nuevoInventario = {
-    ID_Inventario: generarIDInventario(),
+    ID_Inventario: generarID(),
     ID_Creador: creadorID,
     Nombre: nombre,
     Descripción: descripcion,
@@ -159,7 +159,7 @@ app.post("/inventario", async (req, res) => {
 
   try {
     const comando = new PutCommand({
-      TableName: "Inventario",
+      TableName: "DatosInventario",
       Item: nuevoInventario,
       ConditionExpression: "attribute_not_exists(ID_Inventario)", // evita sobrescribir
     });
@@ -169,28 +169,6 @@ app.post("/inventario", async (req, res) => {
   } catch (error) {
     console.error("Error al crear inventario:", error);
     res.status(500).json({ mensaje: "Error del servidor al crear inventario." });
-  }
-});
-
-app.get("/inventario/:id", async (req, res) => {
-  const { id } = req.params;
-
-  try {
-    const comando = new GetCommand({
-      TableName: "Inventario",
-      Key: { ID_Inventario: id },
-    });
-
-    const resultado = await ddbDocClient.send(comando);
-
-    if (!resultado.Item) {
-      return res.status(404).json({ mensaje: "Inventario no encontrado." });
-    }
-
-    res.json(resultado.Item);
-  } catch (error) {
-    console.error("Error al obtener inventario:", error);
-    res.status(500).json({ mensaje: "Error del servidor al obtener inventario." });
   }
 });
 

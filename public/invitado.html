@@ -119,62 +119,6 @@
       }
     }
   </script>
-
-  <script>
-  // Script para llamar a los valores de una tabla según su ID
-  async function cargarInventarioPorID(idInventario) {
-    try {
-      const host = window.location.hostname;
-      const response = await fetch(`http://${host}:3000/inventario/${idInventario}`, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json"
-        }
-      });
-
-      if (!response.ok) {
-        throw new Error("Inventario no encontrado");
-      }
-
-      const inventario = await response.json();
-
-      // Cambia encabezado, ID y descripción
-      document.getElementById("inventoryID").innerText = inventario.ID_Inventario;
-      document.querySelector("header h1").innerText = inventario.Nombre;
-      document.querySelector(".descripcion-texto").innerText = inventario.Descripción;
-
-      // Limpia y carga la tabla de productos
-      const tbody = document.querySelector("table tbody");
-      tbody.innerHTML = "";
-
-      inventario.Productos.forEach(producto => {
-        const fila = document.createElement("tr");
-        fila.innerHTML = `
-          <td>${producto.ID_Producto || ""}</td>
-          <td>${producto.Nombre || ""}</td>
-          <td>${producto.Descripción || ""}</td>
-          <td>${producto.Cantidad_Disponible || 0}</td>
-          <td>${producto.Cantidad_Min || 0}</td>
-          <td>${producto.Cantidad_Max || 0}</td>
-          <td>${producto.Unidad_Medida || ""}</td>
-          <td>${producto.Precio_Unitario || 0}</td>
-          <td>${producto.Costo_Unitario || 0}</td>
-          <td>${producto.Código_Barras || ""}</td>
-        `;
-        tbody.appendChild(fila);
-      });
-
-    } catch (error) {
-      console.error("Error al obtener inventario:", error);
-      alert("No se pudo cargar el inventario.");
-    }
-    }   
-    //Cargar el inventario
-    window.onload = () => {
-      cargarInventarioPorID("0-A");
-    };
-    </script>
-    
   
 </body>
 </html>

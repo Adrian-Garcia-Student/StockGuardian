@@ -50,6 +50,7 @@
         });
 
         const data = await response.json();
+        localStorage.setItem("idUsuario", data.id);
 
         if (!response.ok) {
           alert(data.mensaje);

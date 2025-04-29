@@ -34,18 +34,40 @@
   </div>
 
   <script>
-    document.getElementById("form-inventario").addEventListener("submit", function(e) {
+    document.getElementById("form-inventario").addEventListener("submit", async function(e) {
       e.preventDefault();
       const nombre = document.getElementById("nombre").value.trim();
       const descripcion = document.getElementById("descripcion").value.trim();
+
+      const creadorID = localStorage.getItem("idUsuario");
 
       if (!nombre || !descripcion) {
         alert("Por favor completa todos los campos.");
         return;
       }
 
-      alert(`Inventario "${nombre}" creado con éxito (simulado).`);
-      window.location.href = "listado.html";
+      try {
+        const host = window.location.hostname;
+        const response = await fetch(`http://${host}:3000/datosinventario`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({ nombre, descripcion, creadorID })
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          alert(`Inventario "${nombre}" creado con éxito. ID: ${data.ID_Inventario}`);
+          window.location.href = "listado.html";
+        } else {
+          const errorData = await response.json();
+          alert(`Error: ${errorData.mensaje}`);
+        }
+    } catch (error) {
+      console.error("Error al enviar datos:", error);
+      alert("Error al conectar con el servidor.");
+    }
     });
   </script>
 </body>

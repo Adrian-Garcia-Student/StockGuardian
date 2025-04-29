@@ -73,6 +73,41 @@
       alert(`El inventario con ID ${idAEliminar} ha sido eliminado (simulado).`);
       cerrarModal();
     }
+
+    document.addEventListener("DOMContentLoaded", function() {
+      async function cargarInventarios() {
+      const creadorID = localStorage.getItem.idUsuario;
+
+      const host = window.location.hostname;
+      const response = await fetch(`http://${host}:3000/datosinventario?creadorID=${creadorID}`);
+      const data = await response.json();
+
+      if (response.ok) {
+        const inventarios = data.inventarios;
+        
+        //Agregar los inventarios a la lista
+        const tabla = document.querySelector(".tabla");
+        inventarios.forEach(inventario => {
+          const fila = document.createElement("div");
+          fila.classList.add("fila");
+
+          fila.innerHTML = `
+            <span>${inventario.Nombre}</span>
+            <span>${inventario.ID_Inventario} <button onclick="copiarID('${inventario.ID_Inventario}')">📋</button></span>
+            <span>${inventario.FechaModificacion || "No disponible"}</span>
+            <span><button class="eliminar-btn" onclick="mostrarConfirmacion('${inventario.ID_Inventario}')">🗑️</button></span>
+          `;
+          
+          tabla.appendChild(fila);
+        });
+      } else {
+        alert(data.mensaje || "Error al cargar inventarios.");
+      }
+      }
+
+      cargarInventarios();
+    });
+
   </script>
 </body>
 </html>

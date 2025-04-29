@@ -1,7 +1,7 @@
 import express from "express";
 import cors from "cors";
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
-import { GetCommand, PutCommand, UpdateCommand, DeleteCommand, DynamoDBDocumentClient } from "@aws-sdk/lib-dynamodb";
+import { GetCommand, PutCommand, UpdateCommand, DeleteCommand, QueryCommand, DynamoDBDocumentClient } from "@aws-sdk/lib-dynamodb";
 import bodyParser from "body-parser";
 import path from "path";  // Importamos path
 import { fileURLToPath } from "url";  // Para convertir la URL en ruta de archivo
@@ -102,6 +102,7 @@ app.post("/verificar-usuario", async (req, res) => {
   }
 });
 
+//Validar la comida favorita, que es pregunta de seguridad
 app.post("/validar-comida", async (req, res) => {
   const { email, comida, nuevaContraseña } = req.body;
 
@@ -141,7 +142,7 @@ app.post("/validar-comida", async (req, res) => {
 });
 
 
-
+//Crear un inventario con sus datos generales
 app.post("/datosinventario", async (req, res) => {
   const { nombre, descripcion, creadorID } = req.body;
 
@@ -154,7 +155,6 @@ app.post("/datosinventario", async (req, res) => {
     ID_Creador: creadorID,
     Nombre: nombre,
     Descripción: descripcion,
-    Productos: [], // inicializado vacío
   };
 
   try {
@@ -169,6 +169,28 @@ app.post("/datosinventario", async (req, res) => {
   } catch (error) {
     console.error("Error al crear inventario:", error);
     res.status(500).json({ mensaje: "Error del servidor al crear inventario." });
+  }
+});
+
+//Obtener los inventarios del usuario actual
+app.get("/datosinventario/:idCreador", async (req, res) => {
+  const { idCreador } = req.params;
+
+  try {
+    const comando = new QueryCommand({
+      TableName: "DatosInventario",
+      KeyConditionExpression: "ID_Creador = :id",
+      ExpressionAttributeValues: {
+        ":id": idCreador,
+      },
+    });
+
+    const resultado = await ddbDocClient.send(comando);
+
+    res.json(resultado.Items);
+  } catch (error) {
+    console.error("Error al obtener inventarios:", error);
+    res.status(500).json({ mensaje: "Error del servidor." });
   }
 });
 

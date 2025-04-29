@@ -195,6 +195,33 @@ app.get("/datosinventario/:idCreador", async (req, res) => {
   }
 });
 
+//Validar el ID de un inventario para acceder
+app.get('/verificarinventario/:id', async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const comando = new GetCommand({
+      TableName: 'DatosInventario',
+      Key: {
+        ID_Inventario: id,
+      },
+    });
+
+    const resultado = await ddbDocClient.send(comando);
+
+    if (!resultado.Item) {
+      return res.status(404).json({ error: "Inventario no encontrado" });
+    }
+
+    // Devolver info del inventario
+    res.json(resultado.Item,);
+    
+  } catch (error) {
+    console.error("Error al obtener el inventario:", error);
+    res.status(500).json({ error: "Error del servidor" });
+  }
+});
+
 //Generador de IDs de aleatorios
 function generarID(longitud = 8) {
   const caracteres = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
@@ -204,7 +231,6 @@ function generarID(longitud = 8) {
   }
   return id;
 }
-
 
 // Inicia el servidor
 app.listen(port, () => {

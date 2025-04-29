@@ -59,7 +59,50 @@
   </div>
 
   <script>
-    function accederComo(tipo) {
+    async function accederComo(tipo) {
+      const creadorID = localStorage.getItem("idUsuario");
+      const id = tipo === 'admin' 
+        ? document.getElementById('id-admin').value.trim()
+        : document.getElementById('id-invitado').value.trim();
+
+      if (!id) {
+        document.getElementById("modal").style.display = "flex"; // Mostrar modal
+        return;
+      }
+
+      try {
+        const host = window.location.hostname;
+        const respuesta = await fetch(`http://${host}:3000/verificarInventario/${id}`);
+        const data = await respuesta.json();
+
+        if (!data || data.error) {
+          document.getElementById("modal").style.display = "flex";
+          return;
+        }
+
+        localStorage.setItem("inventarioActual", data.ID_Inventario);
+
+        if (tipo === 'admin') {
+          // Verificar si el usuario es el creador del inventario
+          if (data.ID_Creador !== usuarioActual.id) {
+            alert("No tienes permisos para editar este inventario.");
+            return;
+          }
+          window.location.href = "vista-admin.html";
+        } else {
+          window.location.href = "invitado.html";
+        }
+      } catch (error) {
+        console.error("Error al verificar el inventario:", error);
+        alert("Hubo un problema al verificar el inventario. Intenta nuevamente.");
+      }
+      }
+
+      function cerrarModal() {
+        document.getElementById("modal").style.display = "none";
+      }
+
+    /*function accederComo(tipo) {
       const id = tipo === 'admin' 
         ? document.getElementById('id-admin').value.trim()
         : document.getElementById('id-invitado').value.trim();
@@ -78,7 +121,7 @@
 
     function cerrarModal() {
       document.getElementById("modal").style.display = "none";
-    }
+    }*/
   </script>
 </body>
 </html>

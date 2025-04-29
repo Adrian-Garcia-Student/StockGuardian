@@ -214,7 +214,7 @@ app.get('/verificarinventario/:id', async (req, res) => {
     }
 
     // Devolver info del inventario
-    res.json(resultado.Item,);
+    res.json(resultado.Item);
     
   } catch (error) {
     console.error("Error al obtener el inventario:", error);

@@ -179,6 +179,7 @@ app.get("/datosinventario/:idCreador", async (req, res) => {
   try {
     const comando = new QueryCommand({
       TableName: "DatosInventario",
+      IndexName: "InventariosPorCreador",
       KeyConditionExpression: "ID_Creador = :id",
       ExpressionAttributeValues: {
         ":id": idCreador,
@@ -187,7 +188,7 @@ app.get("/datosinventario/:idCreador", async (req, res) => {
 
     const resultado = await ddbDocClient.send(comando);
 
-    res.json(resultado.Items);
+    res.json({ datosinventario: resultado.Items });
   } catch (error) {
     console.error("Error al obtener inventarios:", error);
     res.status(500).json({ mensaje: "Error del servidor." });

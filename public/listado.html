@@ -22,19 +22,6 @@
           <span>Acciones</span>
         </div>
 
-        <div class="fila">
-          <span>Llantas y Más</span>
-          <span>45TYUY64XS <button onclick="copiarID('45TYUY64XS')">📋</button></span>
-          <span>24/03/2025</span>
-          <span><button class="eliminar-btn" onclick="mostrarConfirmacion('45TYUY64XS')">🗑️</button></span>
-        </div>
-
-        <div class="fila">
-          <span>Latosos co</span>
-          <span>982TE76HB1 <button onclick="copiarID('982TE76HB1')">📋</button></span>
-          <span>30/03/2025</span>
-          <span><button class="eliminar-btn" onclick="mostrarConfirmacion('982TE76HB1')">🗑️</button></span>
-        </div>
       </div>
     </div>
 
@@ -76,7 +63,7 @@
 
     document.addEventListener("DOMContentLoaded", function() {
       async function cargarInventarios() {
-      const creadorID = localStorage.getItem.idUsuario;
+      const creadorID = localStorage.getItem("idUsuario");
 
       const host = window.location.hostname;
       const response = await fetch(`http://${host}:3000/datosinventario?creadorID=${creadorID}`);

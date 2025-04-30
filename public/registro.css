@@ -133,6 +133,39 @@ button[type="submit"] {
   color: #EC221F;
 }
 
+/* ICONO PARA MAS INFORMACION*/
+#info {
+  width: 12px;
+  height: auto;
+  margin-left: 3px;
+}
+
+/* CONTENEDOR DE MENSAJE DE INFORMACION*/
+.infobox {
+  opacity: 0;
+  transition: 0.5s;
+  box-shadow: 1px 1px 5px rgb(137, 137, 137);
+  position: absolute;
+  background-color: white;
+  left: 30%;
+  top: 62%;
+  width: 15%;
+  border-radius: 8px;
+  text-align: left;
+  padding-bottom: 5px;
+  padding-top: 5px;
+  padding-left: 16px;
+  padding-right: 8px;
+}
+
+/* CONTENIDO DEL MENSAJE DE INFORMACION */
+#infomessage { 
+  font-size: 12px;
+  font-weight: 100;
+  color: rgb(90, 90, 90);
+  font-style: italic;
+}
+
 /* RESPONSIVE */
 @media (max-width: 768px) {
   .form-card {

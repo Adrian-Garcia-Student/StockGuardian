@@ -34,7 +34,7 @@
           <span class="toggle-password" onclick="togglePassword('confirm', this)">👁️</span>
         </div>
 
-        <label>Comida Favorita <span class="required">*</span></label>
+        <label>Pregunta de Seguridad<img id="info" src="moreinfo.png" alt="?"><span class="required">*</span><div class="infobox" id="security"><label id="infomessage">Responda esta pregunta para poder cambiar la contraseña en un futuro.</label></div></label>
         <input type="text" name="comida" placeholder="Ingresa tu comida favorita y recuérdala muy bien" required>
 
         <div class="registro-actions">
@@ -85,6 +85,15 @@
       input.type = isVisible ? "password" : "text";
       el.textContent = isVisible ? "👁️" : "🙈";
     }
+
+    document.getElementById("info").addEventListener("mouseover", async function (e) {
+      const info = document.getElementById("security");
+      info.style.opacity = 1;
+    })
+    document.getElementById("info").addEventListener("mouseleave", async function (e) {
+      const info = document.getElementById("security");
+      info.style.opacity = 0;
+    })
   </script>
 </body>
 </html>

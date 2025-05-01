@@ -28,6 +28,8 @@
           <input type="file" id="importCSV" accept=".csv" style="display: none;" onchange="importarCSV(event)">
           <button onclick="exportarCSV()">Exportar...</button>
           <button onclick="window.location.href='historial_cambios.html'">Historial de cambios</button>
+          <button onclick="mostrarFormularioCrear()">Crear desde cero</button>
+
 
         </div>
 
@@ -56,6 +58,11 @@
           <p id="mensajePlaceholder">Tu inventario se mostrará aquí</p>
         </div>        
       </div>
+      <div id="formularioCrear" style="display:none; margin-top: 20px;">
+        <label for="camposPersonalizados"><strong>Escribe los nombres de las columnas, separados por comas:</strong></label>
+        <input type="text" id="camposPersonalizados" placeholder="Ej: Código, Producto, Precio" style="width: 100%; padding: 10px; margin-top: 10px;"/>
+        <button onclick="crearTablaDesdeCero()" style="margin-top: 10px;">Crear tabla</button>
+      </div>      
     </section>
   </main>
 
@@ -329,6 +336,50 @@
     historial.push(nuevoCambio);
     localStorage.setItem("historialCambios", JSON.stringify(historial));
   }
+
+  function mostrarFormularioCrear() {
+  document.getElementById("formularioCrear").style.display = "block";
+}
+
+function crearTablaDesdeCero() {
+  const camposTexto = document.getElementById("camposPersonalizados").value.trim();
+  if (!camposTexto) {
+    alert("Debes ingresar al menos un nombre de columna.");
+    return;
+  }
+
+  const encabezados = camposTexto.split(",").map(c => c.trim()).filter(c => c !== "");
+  if (encabezados.length === 0) {
+    alert("No se detectaron columnas válidas.");
+    return;
+  }
+
+  const tablaContenedor = document.getElementById("tablaContenedor");
+  tablaContenedor.innerHTML = "";
+
+  const tabla = document.createElement("table");
+  tabla.id = "inventoryTable";
+
+  const thead = document.createElement("thead");
+  const trHead = document.createElement("tr");
+  trHead.innerHTML = `<th></th>` + encabezados.map(c => `<th>${c}</th>`).join("");
+  thead.appendChild(trHead);
+
+  const tbody = document.createElement("tbody");
+
+  const filaAgregar = document.createElement("tr");
+  filaAgregar.innerHTML = `<td><button onclick="agregarFila()">➕</button></td><td colspan="${encabezados.length}"></td>`;
+  tbody.appendChild(filaAgregar);
+
+  tabla.appendChild(thead);
+  tabla.appendChild(tbody);
+  tablaContenedor.appendChild(tabla);
+
+  document.getElementById("formularioCrear").style.display = "none";
+  document.getElementById("camposPersonalizados").value = "";
+  registrarCambioHistorial(null, "CREAR DESDE CERO");
+}
+
 
 
   </script>

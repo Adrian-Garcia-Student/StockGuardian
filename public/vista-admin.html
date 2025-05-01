@@ -91,13 +91,13 @@
       }
     }
 
-    function eliminarFila(boton) {
+  function eliminarFila(boton) {
     const fila = boton.closest("tr");
     registrarCambioHistorial(null, "ELIMINAR");
     fila.remove();
   }
 
-    function agregarFila() {
+  function agregarFila() {
     const tabla = document.getElementById("inventoryTable");
     if (!tabla) {
       alert("Primero debes importar un archivo CSV para generar la tabla.");
@@ -117,6 +117,7 @@
     btnEliminar.onclick = function () {
       eliminarFila(btnEliminar);
     };
+
     celdaEliminar.appendChild(btnEliminar);
     nuevaFila.appendChild(celdaEliminar);
 
@@ -151,13 +152,40 @@
         }
       });
     });
-  }
+  } //Fin de la funcion agregar fila
 
-
-  document.addEventListener("DOMContentLoaded", function () {
+  function habilitarEdicionTabla() {
     const tabla = document.getElementById("inventoryTable");
+    if (!tabla) return;
 
-    tabla.addEventListener("dblclick", function (e) {
+    // Editar columnas (th)
+    const ths = tabla.querySelectorAll("thead th");
+    ths.forEach((th, index) => {
+      if (index === 0) return;
+
+    th.addEventListener("dblclick", function () {
+      const valorOriginal = th.textContent.trim();
+      const input = document.createElement("input");
+      input.type = "text";
+      input.value = valorOriginal;
+      th.textContent = "";
+      th.appendChild(input);
+      input.focus();
+
+      const guardarCambio = () => {
+        const nuevoValor = input.value.trim();
+        th.textContent = nuevoValor !== "" ? nuevoValor : valorOriginal;
+        // Si quieres registrar esto en historial:
+        // registrarCambioHistorial("ENCABEZADO: " + valorOriginal, "MODIFICACION");
+      };
+
+      input.addEventListener("keydown", e => e.key === "Enter" && guardarCambio());
+      input.addEventListener("blur", guardarCambio);
+    });
+  });
+
+  // Editar celdas (td)
+  tabla.addEventListener("dblclick", function (e) {
     const celda = e.target;
     if (celda.tagName.toLowerCase() === "td" && !celda.querySelector("input")) {
       const valorOriginal = celda.textContent;
@@ -168,7 +196,7 @@
       celda.appendChild(input);
       input.focus();
 
-      let guardado = false; // ⚠️ Control para evitar doble guardado
+      let guardado = false;
 
       const guardarCambio = () => {
         const nuevoValor = input.value.trim();
@@ -181,19 +209,11 @@
         celda.textContent = nuevoValor;
       };
 
-      input.addEventListener("keydown", function (e) {
-        if (e.key === "Enter") {
-          guardarCambio();
-        }
-      });
-
-      input.addEventListener("blur", function () {
-        guardarCambio();
-      });
+      input.addEventListener("keydown", e => e.key === "Enter" && guardarCambio());
+      input.addEventListener("blur", guardarCambio);
     }
   });
-
-  });
+}
 
   function exportarCSV() {
   const tabla = document.getElementById("inventoryTable");
@@ -310,6 +330,7 @@
     tablaContenedor.appendChild(tabla);
 
     registrarCambioHistorial(null, "IMPORTAR");
+    habilitarEdicionTabla();
     event.target.value = ""; // reset input file
   };
 
@@ -378,6 +399,7 @@ function crearTablaDesdeCero() {
   document.getElementById("formularioCrear").style.display = "none";
   document.getElementById("camposPersonalizados").value = "";
   registrarCambioHistorial(null, "CREAR DESDE CERO");
+  habilitarEdicionTabla();
 }
 
 

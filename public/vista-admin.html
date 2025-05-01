@@ -140,10 +140,6 @@
       input.addEventListener("keydown", function (e) {
         if (e.key === "Enter") {
           const valores = Array.from(inputs).map(i => i.value.trim());
-          if (valores.some(v => v === "")) {
-            alert("Por favor, completa todos los campos antes de guardar.");
-            return;
-          }
           valores.forEach((valor, index) => {
             const td = inputs[index].parentElement;
             td.textContent = valor;
@@ -153,6 +149,63 @@
       });
     });
   } //Fin de la funcion agregar fila
+
+  function moverCursorConFlechas(input, filaActual, columnaActual) {
+    input.addEventListener("keydown", function (e) {
+      if (!(e.altKey && ["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight"].includes(e.key))) return;
+
+      e.preventDefault(); // Evitar comportamiento por defecto
+
+      const tabla = document.getElementById("inventoryTable");
+      const filas = Array.from(tabla.querySelector("tbody").rows).filter(f => f.querySelector("button")?.textContent !== "➕");
+
+      let nuevaFila = filaActual;
+      let nuevaColumna = columnaActual;
+
+      if (e.key === "ArrowUp" && filaActual > 0) nuevaFila--;
+      else if (e.key === "ArrowDown" && filaActual < filas.length - 1) nuevaFila++;
+      else if (e.key === "ArrowLeft" && columnaActual > 1) nuevaColumna--;
+      else if (e.key === "ArrowRight" && columnaActual < filas[0].cells.length - 1) nuevaColumna++;
+
+      // ✅ Verificación segura antes de editar
+      if (nuevaFila !== filaActual || nuevaColumna !== columnaActual) {
+        const celdaDestino = filas[nuevaFila]?.cells[nuevaColumna];
+        if (celdaDestino && celdaDestino.tagName.toLowerCase() === "td") {
+          activarEdicionCelda(celdaDestino);
+        }
+      }
+    });
+  }
+
+  function activarEdicionCelda(celda) {
+    const valorOriginal = celda.textContent;
+    const input = document.createElement("input");
+    input.type = "text";
+    input.value = valorOriginal;
+    celda.textContent = "";
+    celda.appendChild(input);
+    input.focus();
+
+    const filaIndex = celda.parentElement.rowIndex - 1; // restamos el encabezado
+    const colIndex = celda.cellIndex;
+
+    moverCursorConFlechas(input, filaIndex, colIndex);
+
+    input.addEventListener("keydown", function (e) {
+      if (e.key === "Enter") {
+        celda.textContent = input.value.trim();
+        const th = celda.closest("table").querySelectorAll("th")[celda.cellIndex];
+        const nombreColumna = th ? th.innerText : null;
+        if (input.value.trim() !== valorOriginal.trim()) {
+          registrarCambioHistorial(nombreColumna, "MODIFICACION");
+        }
+      }
+    });
+
+    input.addEventListener("blur", function () {
+      celda.textContent = input.value.trim();
+    });
+  }
 
   function habilitarEdicionTabla() {
     const tabla = document.getElementById("inventoryTable");
@@ -187,33 +240,19 @@
   // Editar celdas (td)
   tabla.addEventListener("dblclick", function (e) {
     const celda = e.target;
-    if (celda.tagName.toLowerCase() === "td" && !celda.querySelector("input")) {
-      const valorOriginal = celda.textContent;
-      const input = document.createElement("input");
-      input.type = "text";
-      input.value = valorOriginal;
-      celda.textContent = "";
-      celda.appendChild(input);
-      input.focus();
 
-      let guardado = false;
+    // ⛔ Evitar editar si no es <td> o contiene un botón (❌ / ➕)
+    if (
+      celda.tagName.toLowerCase() !== "td" ||
+      celda.cellIndex === 0 ||
+      celda.querySelector("button")
+      ) {
+        return;
+      }
 
-      const guardarCambio = () => {
-        const nuevoValor = input.value.trim();
-        if (!guardado && nuevoValor !== valorOriginal.trim()) {
-          guardado = true;
-          const th = celda.closest("table").querySelectorAll("th")[celda.cellIndex];
-          const nombreColumna = th ? th.innerText : null;
-          registrarCambioHistorial(nombreColumna, "MODIFICACION");
-        }
-        celda.textContent = nuevoValor;
-      };
-
-      input.addEventListener("keydown", e => e.key === "Enter" && guardarCambio());
-      input.addEventListener("blur", guardarCambio);
-    }
-  });
-}
+      activarEdicionCelda(celda);
+    });
+  }
 
   function exportarCSV() {
   const tabla = document.getElementById("inventoryTable");

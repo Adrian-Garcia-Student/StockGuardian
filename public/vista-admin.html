@@ -52,74 +52,9 @@
       </div>
 
       <div class="tabla-container">
-        <table id="inventoryTable">
-          <thead>
-              <tr>
-                <th></th> <!-- Columna para eliminar -->
-                <th>ID Producto</th>
-                <th>Nombre</th>
-                <th>Categoría</th>
-                <th>Descripción</th>
-                <th>Cantidad</th>
-                <th>Mínima</th>
-                <th>Máxima</th>
-                <th>Precio Unitario</th>
-                <th>Costo Unitario</th>
-                <th>Unidad</th>
-                <th>Código de Barras</th>
-              </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td><button onclick="eliminarFila(this)">❌</button></td>
-              <td>2764238746923</td>
-              <td>Llanta Goodyear</td>
-              <td>Automotriz</td>
-              <td>Llanta de alto rendimiento</td>
-              <td>20</td>
-              <td>10</td>
-              <td>100</td>
-              <td>$750</td>
-              <td>$500</td>
-              <td>Pieza</td>
-              <td>7501031300072</td>
-            </tr>
-            <tr>
-              <td><button onclick="eliminarFila(this)">❌</button></td>
-              <td>19630273977977</td>
-              <td>Rin deportivo</td>
-              <td>Accesorios</td>
-              <td>Rin aluminio 16”</td>
-              <td>12</td>
-              <td>5</td>
-              <td>50</td>
-              <td>$1200</td>
-              <td>$950</td>
-              <td>Pieza</td>
-              <td>7501234567890</td>
-            </tr>
-            <tr>
-              <td><button onclick="eliminarFila(this)">❌</button></td>
-              <td>71236436737376</td>
-              <td>Filtro de aceite</td>
-              <td>Mantenimiento</td>
-              <td>Filtro motor estándar</td>
-              <td>50</td>
-              <td>20</td>
-              <td>200</td>
-              <td>$150</td>
-              <td>$100</td>
-              <td>Pieza</td>
-              <td>7509999999999</td>
-            </tr>
-            <tr>
-              <td>
-                <button onclick="agregarFila()">➕</button>
-              </td>
-              <td colspan="11"></td>
-            </tr>
-          </tbody>
-        </table>
+        <div class="tabla-container" id="tablaContenedor">
+          <p id="mensajePlaceholder">Tu inventario se mostrará aquí</p>
+        </div>        
       </div>
     </section>
   </main>
@@ -155,49 +90,62 @@
     fila.remove();
   }
 
-  function agregarFila() {
-    const tabla = document.getElementById("inventoryTable").getElementsByTagName("tbody")[0];
+    function agregarFila() {
+    const tabla = document.getElementById("inventoryTable");
+    if (!tabla) {
+      alert("Primero debes importar un archivo CSV para generar la tabla.");
+      return;
+    }
+
+    const tbody = tabla.querySelector("tbody");
+    const encabezados = tabla.querySelectorAll("thead th");
+    const columnas = encabezados.length - 1; // restar columna del botón ❌
+
     const nuevaFila = document.createElement("tr");
 
-    nuevaFila.innerHTML = `
-      <td><button onclick="eliminarFila(this)">❌</button></td>
-      <td><input type="text" /></td>
-      <td><input type="text" /></td>
-      <td><input type="text" /></td>
-      <td><input type="text" /></td>
-      <td><input type="text" /></td>
-      <td><input type="text" /></td>
-      <td><input type="text" /></td>
-      <td><input type="text" /></td>
-      <td><input type="text" /></td>
-      <td><input type="text" /></td>
-      <td><input type="text" /></td>
-    `;
+    // Crear celda para botón eliminar
+    const celdaEliminar = document.createElement("td");
+    const btnEliminar = document.createElement("button");
+    btnEliminar.textContent = "❌";
+    btnEliminar.onclick = function () {
+      eliminarFila(btnEliminar);
+    };
+    celdaEliminar.appendChild(btnEliminar);
+    nuevaFila.appendChild(celdaEliminar);
 
-    tabla.insertBefore(nuevaFila, tabla.lastElementChild);
+    // Crear celdas con inputs vacíos
+    for (let i = 0; i < columnas; i++) {
+      const td = document.createElement("td");
+      const input = document.createElement("input");
+      input.type = "text";
+      td.appendChild(input);
+      nuevaFila.appendChild(td);
+    }
 
+    // Insertar antes de la última fila (la del botón ➕)
+    const filaAgregar = tbody.querySelector("tr:last-child");
+    tbody.insertBefore(nuevaFila, filaAgregar);
+
+    // Añadir Enter para guardar fila
     const inputs = nuevaFila.querySelectorAll("input");
     inputs.forEach(input => {
       input.addEventListener("keydown", function (e) {
         if (e.key === "Enter") {
-          e.preventDefault();
           const valores = Array.from(inputs).map(i => i.value.trim());
           if (valores.some(v => v === "")) {
             alert("Por favor, completa todos los campos antes de guardar.");
             return;
           }
-          // Reemplazar inputs por texto plano
           valores.forEach((valor, index) => {
             const td = inputs[index].parentElement;
             td.textContent = valor;
           });
-          // Agregar nueva fila vacía
           agregarFila();
-          registrarCambioHistorial(null, "AGREGAR");
         }
       });
     });
   }
+
 
   document.addEventListener("DOMContentLoaded", function () {
     const tabla = document.getElementById("inventoryTable");
@@ -242,18 +190,25 @@
 
   function exportarCSV() {
   const tabla = document.getElementById("inventoryTable");
-  let csv = [];
-  const filas = tabla.querySelectorAll("tbody tr");
+  if (!tabla) {
+    alert("No hay datos para exportar.");
+    return;
+  }
 
-  for (let fila of filas) {
-    // Ignorar la fila del botón ➕
+  let csv = [];
+  const filas = tabla.querySelectorAll("tr");
+
+  for (let i = 0; i < filas.length; i++) {
+    const fila = filas[i];
+    const celdas = fila.querySelectorAll("th, td");
+
+    // Ignorar fila del botón ➕
     if (fila.querySelector("button[onclick*='agregarFila']")) continue;
 
-    const celdas = fila.querySelectorAll("td");
     let filaCSV = [];
 
-    for (let i = 1; i < celdas.length; i++) { // empieza desde 1 para saltar la celda de eliminar
-      const celda = celdas[i];
+    for (let j = 1; j < celdas.length; j++) {
+      const celda = celdas[j];
       const input = celda.querySelector("input");
       if (input) {
         filaCSV.push(`"${input.value.trim()}"`);
@@ -267,73 +222,93 @@
     }
   }
 
-    // Encabezados definidos manualmente
-    const encabezado = [
-      "ID Producto", "Nombre", "Categoría", "Descripción",
-      "Cantidad", "Mínima", "Máxima",
-      "Precio Unitario", "Costo Unitario", "Unidad", "Código de Barras"
-    ].join(",");
-
-    const contenidoCSV = [encabezado, ...csv].join("\n");
-    const blob = new Blob([contenidoCSV], { type: "text/csv" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = "inventario.csv";
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    registrarCambioHistorial(null, "EXPORTAR");
+  if (csv.length === 0) {
+    alert("No hay registros para exportar.");
+    return;
   }
 
+  // Agregar encabezado manualmente desde la tabla
+  const headers = Array.from(tabla.querySelectorAll("thead th"))
+    .slice(1) // omitimos la primera celda del ❌
+    .map(th => th.textContent.trim())
+    .join(",");
+
+  const contenidoCSV = [headers, ...csv].join("\n");
+  const blob = new Blob([contenidoCSV], { type: "text/csv" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "inventario.csv";
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+}
 
   function importarCSV(event) {
-    const archivo = event.target.files[0];
-    if (!archivo || !archivo.name.endsWith(".csv")) {
-      alert("Por favor selecciona un archivo CSV válido.");
+  const archivo = event.target.files[0];
+  if (!archivo || !archivo.name.endsWith(".csv")) {
+    alert("Por favor selecciona un archivo CSV válido.");
+    return;
+  }
+
+  const reader = new FileReader();
+  reader.onload = function (e) {
+    const contenido = e.target.result.trim();
+    const lineas = contenido.split("\n");
+    if (lineas.length === 0) {
+      alert("El archivo CSV está vacío.");
       return;
     }
 
-    const reader = new FileReader();
-    reader.onload = function (e) {
-      const contenido = e.target.result.trim();
-      const lineas = contenido.split("\n");
+    const encabezados = lineas[0].split(",").map(h => h.replace(/"/g, "").trim());
+    const tablaContenedor = document.getElementById("tablaContenedor");
+    tablaContenedor.innerHTML = ""; // limpiar contenido previo
 
-      const columnasEsperadas = 11;
-      const tabla = document.getElementById("inventoryTable");
-      const tbody = tabla.querySelector("tbody");
+    const tabla = document.createElement("table");
+    tabla.id = "inventoryTable";
 
-      // Eliminar todas las filas excepto la del botón ➕
-      const filas = Array.from(tbody.querySelectorAll("tr"));
-      filas.forEach(f => {
-        if (!f.querySelector("button[onclick*='agregarFila']")) f.remove();
-      });
+    // Crear encabezado
+    const thead = document.createElement("thead");
+    const encabezadoFila = document.createElement("tr");
+    encabezadoFila.innerHTML = `<th></th>` + encabezados.map(h => `<th>${h}</th>`).join("");
+    thead.appendChild(encabezadoFila);
+    tabla.appendChild(thead);
 
-      for (let i = 1; i < lineas.length; i++) {
-        const linea = lineas[i];
-        const datos = linea.split(",").map(d => d.replace(/"/g, "").trim());
-        if (datos.length === 12 && datos[0] === "") datos.shift(); // Quita la celda vacía
-
-
-        if (datos.length !== columnasEsperadas) {
-          alert("El archivo no tiene el formato correcto. Se esperaban 11 columnas por fila.");
-          return;
-        }
-
-        const nuevaFila = document.createElement("tr");
-        nuevaFila.innerHTML = `
-          <td><button onclick="eliminarFila(this)">❌</button></td>
-          ${datos.map(d => `<td>${d}</td>`).join("")}
-        `;
-        tbody.insertBefore(nuevaFila, tbody.lastElementChild);
+    // Crear cuerpo
+    const tbody = document.createElement("tbody");
+    for (let i = 1; i < lineas.length; i++) {
+      const fila = document.createElement("tr");
+      const datos = lineas[i].split(",").map(d => d.replace(/"/g, "").trim());
+      if (datos.length !== encabezados.length) {
+        alert(`La fila ${i + 1} no tiene el mismo número de columnas que el encabezado.`);
+        return;
       }
 
-      event.target.value = "";
-    };
+      fila.innerHTML = `
+        <td><button onclick="eliminarFila(this)">❌</button></td>
+        ${datos.map(d => `<td>${d}</td>`).join("")}
+      `;
+      tbody.appendChild(fila);
+    }
 
-    reader.readAsText(archivo);
+    // Fila para añadir más
+    const filaAgregar = document.createElement("tr");
+    filaAgregar.innerHTML = `
+      <td><button onclick="agregarFila()">➕</button></td>
+      <td colspan="${encabezados.length}"></td>
+    `;
+    tbody.appendChild(filaAgregar);
+
+    tabla.appendChild(tbody);
+    tablaContenedor.appendChild(tabla);
+
     registrarCambioHistorial(null, "IMPORTAR");
-  }
+    event.target.value = ""; // reset input file
+  };
+
+  reader.readAsText(archivo);
+}
+
   // Función para obtener fecha en formato DD/MM/YY
   function obtenerFechaActual() {
     const hoy = new Date();

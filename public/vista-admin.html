@@ -297,8 +297,13 @@
     const blob = new Blob([contenidoCSV], { type: "text/csv" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
+
+    // Generar nombre dinámico con fecha y hora
+    const ahora = new Date();
+    const fechaHora = ahora.toISOString().slice(0,16).replace("T", "_").replace(":", "-"); // yyyy-mm-dd_hh-mm
+    a.download = `inventario_${fechaHora}.csv`;
+
     a.href = url;
-    a.download = "inventario.csv";
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);

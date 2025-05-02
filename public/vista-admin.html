@@ -211,40 +211,40 @@
     const tabla = document.getElementById("inventoryTable");
     if (!tabla) return;
 
-    // Editar columnas (th)
-    const ths = tabla.querySelectorAll("thead th");
+    // PREVENIR MÚLTIPLES EVENTOS
+    const nuevaTabla = tabla.cloneNode(true); // Clonamos la tabla
+    tabla.parentNode.replaceChild(nuevaTabla, tabla); // Reemplazamos la vieja
+
+    // Ahora volvemos a tomar la referencia actualizada
+    const ths = nuevaTabla.querySelectorAll("thead th");
     ths.forEach((th, index) => {
       if (index === 0 || th.querySelector("button")?.textContent === "➕") return;
 
-    th.addEventListener("dblclick", function () {
-      const valorOriginal = th.textContent.trim();
-      const input = document.createElement("input");
-      input.type = "text";
-      input.value = valorOriginal;
-      th.textContent = "";
-      th.appendChild(input);
-      input.focus();
+      th.addEventListener("dblclick", function () {
+        const valorOriginal = th.textContent.trim();
+        const input = document.createElement("input");
+        input.type = "text";
+        input.value = valorOriginal;
+        th.textContent = "";
+        th.appendChild(input);
+        input.focus();
 
-      const guardarCambio = () => {
-        const nuevoValor = input.value.trim();
-        th.textContent = nuevoValor !== "" ? nuevoValor : valorOriginal;
-        // Si quieres registrar esto en historial:
-        // registrarCambioHistorial("ENCABEZADO: " + valorOriginal, "MODIFICACION");
-      };
+        const guardarCambio = () => {
+          const nuevoValor = input.value.trim();
+          th.textContent = nuevoValor !== "" ? nuevoValor : valorOriginal;
+        };
 
-      input.addEventListener("keydown", e => e.key === "Enter" && guardarCambio());
-      input.addEventListener("blur", guardarCambio);
+        input.addEventListener("keydown", e => e.key === "Enter" && guardarCambio());
+        input.addEventListener("blur", guardarCambio);
+      });
     });
-  });
 
-  // Editar celdas (td)
-  tabla.addEventListener("dblclick", function (e) {
-    const celda = e.target;
-    // ⛔ Evitar editar si no es <td> o contiene un botón (❌ / ➕)
-    if (
-      celda.tagName.toLowerCase() !== "td" ||
-      celda.cellIndex === 0 ||
-      celda.querySelector("button")
+    nuevaTabla.addEventListener("dblclick", function (e) {
+      const celda = e.target;
+      if (
+        celda.tagName.toLowerCase() !== "td" ||
+        celda.cellIndex === 0 ||
+        celda.querySelector("button")
       ) {
         return;
       }
@@ -260,31 +260,32 @@
       return;
     }
 
+    const ths = Array.from(tabla.querySelectorAll("thead th"));
+    const headers = ths.slice(1, -1).map(th => th.textContent.trim()); // sin ❌ ni ➕
+    const numColumnas = headers.length;
+
     let csv = [];
-    const filas = tabla.querySelectorAll("tr");
+    const filas = tabla.querySelectorAll("tbody tr");
 
-    for (let i = 0; i < filas.length; i++) {
-      const fila = filas[i];
-      const celdas = fila.querySelectorAll("th, td");
+    for (let fila of filas) {
+      if (fila.querySelector("button")?.textContent === "➕") continue;
 
-      // Ignorar fila del botón ➕
-      if (fila.querySelector("button[onclick*='agregarFila']")) continue;
-
+      const celdas = fila.querySelectorAll("td");
       let filaCSV = [];
 
-      for (let j = 1; j < celdas.length; j++) {
+      for (let j = 1; j <= numColumnas; j++) {
         const celda = celdas[j];
-        const input = celda.querySelector("input");
+        const input = celda?.querySelector("input");
         if (input) {
           filaCSV.push(`"${input.value.trim()}"`);
         } else {
-          filaCSV.push(`"${celda.textContent.trim()}"`);
+          filaCSV.push(`"${celda?.textContent.trim() || ""}"`);
         }
       }
 
-      if (filaCSV.length > 0) {
-        csv.push(filaCSV.join(","));
-      }
+      if (filaCSV.every(cell => cell === '""')) continue;
+
+      csv.push(filaCSV.join(","));
     }
 
     if (csv.length === 0) {
@@ -292,13 +293,7 @@
       return;
     }
 
-    // Agregar encabezado manualmente desde la tabla
-    const headers = Array.from(tabla.querySelectorAll("thead th"))
-      .slice(1) // omitimos la primera celda del ❌
-      .map(th => th.textContent.trim())
-      .join(",");
-
-    const contenidoCSV = [headers, ...csv].join("\n");
+    const contenidoCSV = [headers.join(","), ...csv].join("\n");
     const blob = new Blob([contenidoCSV], { type: "text/csv" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");

@@ -145,4 +145,18 @@ body {
   tr:hover {
     background-color: #f5f5f5;
   }
+
+  th, td {
+    padding: 12px;
+    border-bottom: 1px solid #ddd;
+    border-right: 1px solid #bbb; /* ⚠️ Añade una línea vertical clara */
+    text-align: left;
+  }
+  
+  /* Elimina la línea derecha de la última columna */
+  tr > th:last-child,
+  tr > td:last-child {
+    border-right: none;
+  }
+  
   

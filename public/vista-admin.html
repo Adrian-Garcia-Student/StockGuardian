@@ -29,7 +29,7 @@
           <button onclick="exportarCSV()">Exportar...</button>
           <button onclick="window.location.href='historial_cambios.html'">Historial de cambios</button>
           <button onclick="mostrarFormularioCrear()">Crear desde cero</button>
-          <button>Guardar</button>
+          <button onclick="guardarTabla()">Guardar</button>
 
         </div>
 
@@ -477,6 +477,41 @@ function crearTablaDesdeCero() {
   habilitarEdicionTabla();
 }
 
+
+function guardarTabla() {
+  const tabla = document.getElementById("inventoryTable");
+  const filas = tabla.querySelectorAll("tbody tr");
+  const encabezados = Array.from(tabla.querySelectorAll("thead th")).slice(1, -1).map(th => th.textContent.trim());
+
+  const datos = [];
+
+  filas.forEach(fila => {
+    if (fila.querySelector("button")?.textContent === "➕") return;
+
+    const filaDatos = {};
+    const celdas = fila.querySelectorAll("td");
+
+    for (let i = 1; i < encabezados.length + 1; i++) {
+      const input = celdas[i].querySelector("input");
+      filaDatos[encabezados[i - 1]] = input ? input.value.trim() : celdas[i].textContent.trim();
+    }
+
+    datos.push(filaDatos);
+  });
+
+  const host = window.location.hostname
+  fetch(`http://${host}:3000/api/inventario/actualizar`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ filas: datos, inventarioId: "INVENTARIO123" }) // o el ID que uses
+  })
+  .then(res => res.json())
+  .then(res => alert("Inventario actualizado correctamente"))
+  .catch(err => {
+    console.error("Error al guardar:", err);
+    alert("Error al guardar la tabla");
+  });
+}
 
 
   </script>

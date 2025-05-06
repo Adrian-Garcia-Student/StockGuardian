@@ -221,6 +221,63 @@ app.get('/verificarinventario/:id', async (req, res) => {
   }
 });
 
+//Guardar (sobreescribir) los datos de un inventario
+router.post("/api/inventario/actualizar", async (req, res) => {
+  const { filas, inventarioId } = req.body;
+
+  if (!filas || !Array.isArray(filas) || !inventarioId) {
+    return res.status(400).json({ error: "Datos inválidos" });
+  }
+
+  try {
+    // 1. Eliminar los datos anteriores
+    const paramsConsulta = {
+      TableName: "Inventarios",
+      KeyConditionExpression: "ID_Inventario = :id",
+      ExpressionAttributeValues: { ":id": inventarioId }
+    };
+
+    const datosAnteriores = await dynamodb.query(paramsConsulta).promise();
+    const eliminaciones = datosAnteriores.Items.map(item => ({
+      DeleteRequest: {
+        Key: {
+          ID_Inventario: item.inventarioId,
+          ID_Fila: item.filaId
+        }
+      }
+    }));
+
+    // 2. Preparar las nuevas filas
+    const nuevasFilas = filas.map((fila, i) => ({
+      PutRequest: {
+        Item: {
+          ID_Inventario,
+          ID_Fila: `FILA_${i + 1}`,
+          datos: fila
+        }
+      }
+    }));
+
+    // 3. Combinar todo y hacer operaciones en bloques (máx 25 por lote)
+    const operaciones = [...eliminaciones, ...nuevasFilas];
+    const lotes = [];
+    while (operaciones.length > 0) {
+      lotes.push(operaciones.splice(0, 25));
+    }
+
+    for (const lote of lotes) {
+      await dynamodb.batchWrite({ RequestItems: { "InventarioFilas": lote } }).promise();
+    }
+
+    return res.json({ mensaje: "Inventario sobrescrito correctamente" });
+
+  } catch (err) {
+    console.error("Error al actualizar inventario:", err);
+    return res.status(500).json({ error: "Error al actualizar" });
+  }
+});
+
+
 //Generador de IDs de aleatorios
 function generarID(longitud = 8) {
   const caracteres = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";

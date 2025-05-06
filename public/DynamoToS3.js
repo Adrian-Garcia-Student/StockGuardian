@@ -5,23 +5,27 @@ const client = new DynamoDBClient({ region: "us-east-1" });
 const tablas = [
   {
     nombre: "Usuarios",
-    arn: "arn:aws:dynamodb:us-east-1:167408212463:table/Usuarios"
+    arn: "arn:aws:dynamodb:us-east-1:106530302970:table/Usuarios"
   },
   {
-    nombre: "Inventario",
-    arn: "arn:aws:dynamodb:us-east-1:167408212463:table/Inventario"
+    nombre: "Inventarios",
+    arn: "arn:aws:dynamodb:us-east-1:106530302970:table/Inventarios"
   },
   {
     nombre: "Reporte_Usuarios",
-    arn: "arn:aws:dynamodb:us-east-1:167408212463:table/Reporte_Usuarios"
+    arn: "arn:aws:dynamodb:us-east-1:106530302970:table/Reporte_Usuarios"
   },
   {
     nombre: "Historial",
-    arn: "arn:aws:dynamodb:us-east-1:167408212463:table/Historial"
+    arn: "arn:aws:dynamodb:us-east-1:106530302970:table/Historial"
+  },
+  {
+    nombre: "DatosInventario",
+    arn: "arn:aws:dynamodb:us-east-1:106530302970:table/DatosInventario"
   }
 ];
 
-const bucket = "db-bucket-backup-14251"; //bucket
+const bucket = "stock-guardian-db-backups"; //bucket
 const fecha = new Date().toISOString().split("T")[0];
 
 const run = async () => {

@@ -222,7 +222,7 @@ app.get('/verificarinventario/:id', async (req, res) => {
 });
 
 //Guardar (sobreescribir) los datos de un inventario
-router.post("/api/inventario/actualizar", async (req, res) => {
+app.post("/api/inventario/actualizar", async (req, res) => {
   const { filas, inventarioId } = req.body;
 
   if (!filas || !Array.isArray(filas) || !inventarioId) {

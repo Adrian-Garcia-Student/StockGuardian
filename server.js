@@ -268,7 +268,7 @@ app.post("/api/inventario/actualizar", async (req, res) => {
     for (const lote of lotes) {
       await ddbDocClient.send(new BatchWriteCommand({
         RequestItems: {
-          InventarioFilas: lote
+          Inventarios: lote
         }
       }));
     }

@@ -503,7 +503,7 @@ function guardarTabla() {
   fetch(`http://${host}:3000/api/inventario/actualizar`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ filas: datos, inventarioId: "INVENTARIO123" }) // o el ID que uses
+    body: JSON.stringify({ filas: datos, inventarioId: localStorage.getItem("inventarioActual") }) // o el ID que uses
   })
   .then(res => res.json())
   .then(res => alert("Inventario actualizado correctamente"))

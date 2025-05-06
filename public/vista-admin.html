@@ -97,6 +97,29 @@
     fila.remove();
   }
 
+  function eliminarColumna(index) {
+    const tabla = document.getElementById("inventoryTable");
+    if (!tabla) return;
+
+    const ths = tabla.querySelectorAll("thead th");
+    if (index <= 0 || index >= ths.length - 1) return; // No eliminar ❌ ni ➕
+
+    // 1. Eliminar th correspondiente
+    ths[index].remove();
+
+    // 2. Eliminar cada celda td en esa posición
+    const filas = tabla.querySelectorAll("tbody tr");
+    filas.forEach(fila => {
+      const celdas = fila.querySelectorAll("td");
+      if (celdas[index]) {
+        celdas[index].remove();
+      }
+    });
+
+    registrarCambioHistorial(null, "ELIMINAR_COLUMNA");
+  }
+
+
   function agregarFila() {
     const tabla = document.getElementById("inventoryTable");
     if (!tabla) {
@@ -211,16 +234,19 @@
     const tabla = document.getElementById("inventoryTable");
     if (!tabla) return;
 
-    // PREVENIR MÚLTIPLES EVENTOS
-    const nuevaTabla = tabla.cloneNode(true); // Clonamos la tabla
-    tabla.parentNode.replaceChild(nuevaTabla, tabla); // Reemplazamos la vieja
+    // ⚠️ Prevención opcional de duplicación de eventos
+    tabla.replaceWith(tabla.cloneNode(true));
+    const nuevaTabla = document.getElementById("inventoryTable");
 
-    // Ahora volvemos a tomar la referencia actualizada
+    // Editar encabezados
     const ths = nuevaTabla.querySelectorAll("thead th");
     ths.forEach((th, index) => {
+      // Omitir el th del botón eliminar y el de agregar columna
       if (index === 0 || th.querySelector("button")?.textContent === "➕") return;
 
+      // Doble clic para editar nombre
       th.addEventListener("dblclick", function () {
+        th.querySelectorAll(".btn-eliminar-col").forEach(b => b.remove());
         const valorOriginal = th.textContent.trim();
         const input = document.createElement("input");
         input.type = "text";
@@ -237,8 +263,35 @@
         input.addEventListener("keydown", e => e.key === "Enter" && guardarCambio());
         input.addEventListener("blur", guardarCambio);
       });
+
+      // Clic derecho para mostrar botón eliminar columna
+      th.addEventListener("contextmenu", function (e) {
+        e.preventDefault();
+
+        // Evitar múltiples botones
+        if (th.querySelector(".btn-eliminar-col")) return;
+        const btnEliminar = document.createElement("button");
+        btnEliminar.textContent = "❌";
+        btnEliminar.className = "btn-eliminar-col";
+        btnEliminar.style.marginLeft = "8px";
+        btnEliminar.onclick = function () {
+          const index = Array.from(th.parentElement.children).indexOf(th);
+          eliminarColumna(index);
+        };
+
+        th.appendChild(btnEliminar);
+
+        // Ocultar botón si se hace clic fuera
+        document.addEventListener("click", function ocultar(e2) {
+          if (!th.contains(e2.target)) {
+            btnEliminar.remove();
+            document.removeEventListener("click", ocultar);
+          }
+        });
+      });
     });
 
+    // Doble clic en celdas td para editar
     nuevaTabla.addEventListener("dblclick", function (e) {
       const celda = e.target;
       if (
@@ -248,7 +301,6 @@
       ) {
         return;
       }
-
       activarEdicionCelda(celda);
     });
   }
@@ -261,7 +313,11 @@
     }
 
     const ths = Array.from(tabla.querySelectorAll("thead th"));
-    const headers = ths.slice(1, -1).map(th => th.textContent.trim()); // sin ❌ ni ➕
+    const headers = ths.slice(1, -1).map(th => {
+      const clon = th.cloneNode(true); // Clonar el nodo th
+      clon.querySelectorAll("button").forEach(b => b.remove()); // ❌ Eliminar botones (como la tacha)
+      return clon.textContent.trim(); // Obtener texto limpio
+    });
     const numColumnas = headers.length;
 
     let csv = [];
@@ -310,6 +366,7 @@
   }
 
   function agregarColumna() {
+    document.querySelectorAll(".btn-eliminar-col").forEach(b => b.remove()); // ✅ Eliminar botones tacha abiertos
     const tabla = document.getElementById("inventoryTable");
     if (!tabla) return;
 
@@ -512,6 +569,12 @@ function guardarTabla() {
     alert("Error al guardar la tabla");
   });
 }
+
+document.querySelector(".btn-cerrar").addEventListener("click", function () {
+  const input = document.getElementById("searchInput");
+  input.value = "";
+  searchTable(); // Reaplica el filtro (muestra todo)
+});
 
 
   </script>

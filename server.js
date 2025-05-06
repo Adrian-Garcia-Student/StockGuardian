@@ -221,7 +221,7 @@ app.get('/verificarinventario/:id', async (req, res) => {
   }
 });
 
-//Guardar (sobreescribir) los datos de un inventario
+// Guardar (sobreescribir) los datos de un inventario
 app.post("/api/inventario/actualizar", async (req, res) => {
   const { filas, inventarioId } = req.body;
 
@@ -230,7 +230,7 @@ app.post("/api/inventario/actualizar", async (req, res) => {
   }
 
   try {
-    // 1. Eliminar los datos anteriores
+    // 1. Consultar los datos existentes
     const paramsConsulta = {
       TableName: "Inventarios",
       KeyConditionExpression: "ID_Inventario = :id",
@@ -247,7 +247,22 @@ app.post("/api/inventario/actualizar", async (req, res) => {
       }
     }));
 
-    // 2. Preparar las nuevas filas
+    // 2. Ejecutar eliminaciones en lotes separados (máx 25 por lote)
+    const lotesEliminar = [];
+    const copiaEliminaciones = [...eliminaciones];
+    while (copiaEliminaciones.length > 0) {
+      lotesEliminar.push(copiaEliminaciones.splice(0, 25));
+    }
+
+    for (const lote of lotesEliminar) {
+      await ddbDocClient.send(new BatchWriteCommand({
+        RequestItems: {
+          Inventarios: lote
+        }
+      }));
+    }
+
+    // 3. Preparar las nuevas filas
     const nuevasFilas = filas.map((fila, i) => ({
       PutRequest: {
         Item: {
@@ -258,14 +273,14 @@ app.post("/api/inventario/actualizar", async (req, res) => {
       }
     }));
 
-    // 3. Combinar todo y hacer operaciones en bloques (máx 25 por lote)
-    const operaciones = [...eliminaciones, ...nuevasFilas];
-    const lotes = [];
-    while (operaciones.length > 0) {
-      lotes.push(operaciones.splice(0, 25));
+    // 4. Ejecutar inserciones en lotes separados (máx 25 por lote)
+    const lotesInsertar = [];
+    const copiaNuevasFilas = [...nuevasFilas];
+    while (copiaNuevasFilas.length > 0) {
+      lotesInsertar.push(copiaNuevasFilas.splice(0, 25));
     }
 
-    for (const lote of lotes) {
+    for (const lote of lotesInsertar) {
       await ddbDocClient.send(new BatchWriteCommand({
         RequestItems: {
           Inventarios: lote

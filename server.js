@@ -1,7 +1,7 @@
 import express from "express";
 import cors from "cors";
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
-import { GetCommand, PutCommand, UpdateCommand, DeleteCommand, QueryCommand, DynamoDBDocumentClient } from "@aws-sdk/lib-dynamodb";
+import { GetCommand, PutCommand, UpdateCommand, DeleteCommand, QueryCommand, DynamoDBDocumentClient, BatchWriteCommand } from "@aws-sdk/lib-dynamodb";
 import bodyParser from "body-parser";
 import path from "path";  // Importamos path
 import { fileURLToPath } from "url";  // Para convertir la URL en ruta de archivo
@@ -237,12 +237,12 @@ app.post("/api/inventario/actualizar", async (req, res) => {
       ExpressionAttributeValues: { ":id": inventarioId }
     };
 
-    const datosAnteriores = await dynamodb.query(paramsConsulta).promise();
+    const datosAnteriores = await ddbDocClient.send(new QueryCommand(paramsConsulta));
     const eliminaciones = datosAnteriores.Items.map(item => ({
       DeleteRequest: {
         Key: {
-          ID_Inventario: item.inventarioId,
-          ID_Fila: item.filaId
+          ID_Inventario: item.ID_Inventario,
+          ID_Fila: item.ID_Fila
         }
       }
     }));
@@ -251,7 +251,7 @@ app.post("/api/inventario/actualizar", async (req, res) => {
     const nuevasFilas = filas.map((fila, i) => ({
       PutRequest: {
         Item: {
-          ID_Inventario,
+          ID_Inventario: inventarioId,
           ID_Fila: `FILA_${i + 1}`,
           datos: fila
         }
@@ -266,7 +266,11 @@ app.post("/api/inventario/actualizar", async (req, res) => {
     }
 
     for (const lote of lotes) {
-      await dynamodb.batchWrite({ RequestItems: { "InventarioFilas": lote } }).promise();
+      await ddbDocClient.send(new BatchWriteCommand({
+        RequestItems: {
+          InventarioFilas: lote
+        }
+      }));
     }
 
     return res.json({ mensaje: "Inventario sobrescrito correctamente" });

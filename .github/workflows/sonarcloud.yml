@@ -28,9 +28,6 @@ jobs:
         distribution: 'temurin'
         java-version: '17'
 
-    - name: Install dependencies
-      run: npm install
-
     - name: Download SonarScanner CLI
       run: |
         curl -sSLo sonar-scanner.zip https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-5.0.1.3006-linux.zip

@@ -245,6 +245,9 @@ app.get("/recuperarinventario/:id", async (req, res) => {
     const nombre = item.Nombre?.S || ""; //Guardar en primer variable el nombre, si no existe queda en blanco
     const descripcion = item.Descripción?.S || ""; //Guardar en segunda variable la descripción, si no existe queda en blanco
 
+    console.log("Nombre:" + nombre);
+    console.log("Descripcion:" + descripcion);
+    
     res.json({ nombre, descripcion }); //Responde con las dos variables en json
 
   } catch (error) {

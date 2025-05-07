@@ -11,9 +11,22 @@
 <body>
   <div class="container">
     <div class="panel">
-      <div class="volver" onclick="window.location.href='vista-admin.html'">&#10094;</div>
-      <div class="titulo">Historial de cambios</div>
-      <div class="historial-box">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+        <!-- Flecha volver -->
+        <div class="volver" onclick="window.location.href='vista-admin.html'" style="font-size: 24px;">&#10094;</div>
+      
+        <!-- Título centrado -->
+        <div style="flex-grow: 1; text-align: center; font-size: 24px; font-weight: bold; font-family: 'Jost', sans-serif;">
+          Historial de cambios
+        </div>
+      
+        <!-- Botón exportar -->
+        <button onclick="exportarHistorialCSV()" style="padding: 8px 16px; background-color: #143994; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 14px;">
+          💾 EXPORTAR
+        </button>
+      </div>
+      
+      <div class="historial-box">        
         <table class="tabla-historial">
           <thead>
             <tr>
@@ -52,6 +65,40 @@
         tbody.appendChild(fila);
       });
     });
+
+    function exportarHistorialCSV() {
+      const historial = JSON.parse(localStorage.getItem("historialCambios")) || [];
+      if (historial.length === 0) {
+        alert("No hay historial para exportar.");
+        return;
+      }
+
+      const encabezados = ["ID_Historial", "Columna_Afectada", "Fecha_Accion", "ID_Inventario", "ID_Usuario", "Tipo_Accion"];
+      const filasCSV = historial.map(entry => [
+        entry.id,
+        entry.columna_afectada || "NULL",
+        entry.fecha_accion,
+        entry.id_inventario,
+        entry.id_usuario || "NULL",
+        entry.tipo_accion
+      ]);
+
+      const contenido = [encabezados.join(","), ...filasCSV.map(fila => fila.map(valor => `"${valor}"`).join(","))].join("\n");
+
+      const blob = new Blob([contenido], { type: "text/csv;charset=utf-8;" });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+
+      const fecha = new Date();
+      const nombreArchivo = `historial_${fecha.toISOString().slice(0,16).replace("T", "_").replace(":", "-")}.csv`;
+      
+      link.setAttribute("href", url);
+      link.setAttribute("download", nombreArchivo);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+
   </script>  
 </body>
 </html>

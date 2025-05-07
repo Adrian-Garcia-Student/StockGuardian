@@ -9,7 +9,7 @@
 </head>
 <body>
   <header class="encabezado">
-    <h1>LATOSOS CO</h1>
+    <h1 id="nombreEncabezado">LATOSOS CO</h1>
     <img src="GuardianIcon.png" alt="Escudo" class="icono-escudo">
   </header>
 
@@ -46,7 +46,7 @@
         </div>
         <div>
           <p><strong>Descripción:</strong></p>
-          <p class="descripcion-texto">
+          <p class="descripcion-texto" id="descript">
             Aquí se mostrará la descripción que el usuario haya ingresado
           </p>
         </div>
@@ -89,6 +89,28 @@
       const id = document.getElementById('inventoryID').innerText;
       navigator.clipboard.writeText(id);
     }
+
+    //Cargar datos del inventario
+    document.addEventListener("DOMContentLoaded", async function() {
+
+      const inventactual = localStorage.getItem("inventarioActual");
+
+      if (!inventactual) {
+        console.error("No se encontró el ID del inventario en localStorage");
+        return;
+      }
+
+      const host = window.location.hostname;
+      const respuesta = await fetch(`http://${host}:3000/verificarinventario/${inventactual}`);
+      const data = await respuesta.json();
+
+      const titulo = document.getElementById("nombreEncabezado");
+      const desc = document.getElementById("descript");
+
+      titulo.innerText = data.nombre;
+      desc.innerText = data.descripcion;
+
+    });
 
     function searchTable() {
       const input = document.getElementById("searchInput");

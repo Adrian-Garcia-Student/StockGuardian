@@ -221,6 +221,38 @@ app.get('/verificarinventario/:id', async (req, res) => {
   }
 });
 
+//Recupera el nombre y descripción del inventario actual
+app.get("/recuperarinventario/:id", async (req, res) => {
+  const { id } = req.params;
+
+  try{
+    const comando = new QueryCommand({
+      TableName: 'DatosInventario',
+      KeyConditionExpression: 'ID_Inventario = :id',
+      ExpressionAttributeValues: {
+        ':id': id
+      },
+      ProjectionExpression: "Nombre, Descripción"
+    })
+
+    const resultado = await ddbDocClient.send(comando);
+
+    if (resultado.Items.length === 0) {
+      return res.status(404).json({ mensaje: "Inventario no encontrado" });
+    }
+
+    const item = resultado.Items[0]; //Obtener primer item del query
+    const nombre = item.Nombre?.S || ""; //Guardar en primer variable el nombre, si no existe queda en blanco
+    const descripcion = item.Descripción?.S || ""; //Guardar en segunda variable la descripción, si no existe queda en blanco
+
+    res.json({ nombre, descripcion }); //Responde con las dos variables en json
+
+  } catch (error) {
+    console.error("Error al consultar la información del inventario:", error);
+    res.status(500).json({ error: "Error del servidor"});
+  }
+});
+
 // Guardar (sobreescribir) los datos de un inventario
 app.post("/api/inventario/actualizar", async (req, res) => {
   const { filas, inventarioId } = req.body;

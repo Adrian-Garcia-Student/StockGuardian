@@ -23,11 +23,9 @@ jobs:
         node-version: '14'
 
     - name: Install dependencies
-      run: |
-        npm install
+      run: npm install
 
     - name: SonarCloud Scan
       uses: SonarSource/sonarcloud-github-action@v1
-      with:
-        organization: stockguardian
-        token: ${{ secrets.SONAR_TOKEN }}
+      env:
+        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}

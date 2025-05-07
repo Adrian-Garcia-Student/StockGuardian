@@ -30,8 +30,8 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run: >
           dotnet sonarscanner begin
-          /k:"stockguardian"
-          /o:"Adrian-G"
+          /k:"Adrian-Garcia-Student_StockGuardian"
+          /o:"stockguardian"
           /d:sonar.host.url="https://sonarcloud.io"
           /d:sonar.login="${{ secrets.SONAR_TOKEN }}"
 

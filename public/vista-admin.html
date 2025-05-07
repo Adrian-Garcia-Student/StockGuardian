@@ -65,7 +65,26 @@
       </div>      
     </section>
   </main>
+    <!-- Botón de ayuda -->
+    <button id="botonAyuda" title="Manual de usuario">?</button>
 
+    <!-- Modal del manual de usuario -->
+    <div id="manualModal" class="modal">
+      <div class="modal-contenido">
+        <span class="cerrar-modal">&times;</span>
+        <h2>Manual de Usuario</h2>
+        <p><strong>📦 Importar:</strong> Permite subir un archivo CSV para cargar un inventario.</p>
+        <p><strong>📤 Exportar:</strong> Guarda el inventario actual en un archivo CSV.</p>
+        <p><strong>📜 Historial de cambios:</strong> Muestra todas las acciones realizadas en el inventario.</p>
+        <p><strong>➕ Crear desde cero:</strong> Crea un inventario nuevo con columnas personalizadas separadas por " , ".</p>
+        <p><strong>📝 Edición:</strong> Haz doble clic en cualquier celda o encabezado para editar el texto.</p>
+        <p><strong>🧭 Navegación rápida:</strong> Usa <kbd>ALT</kbd> + <kbd>→</kbd> <kbd>←</kbd> <kbd>↑</kbd> <kbd>↓</kbd> para moverte entre campos de las filas.</p>
+        <p><strong>❌ Eliminar fila:</strong> Haz clic en el botón rojo de la izquierda y eliminara todo fila, no es reversible.</p>
+        <p><strong>❌ Eliminar columna:</strong> Haz clic derecho en el encabezado y selecciona eliminar, no es reversible.</p>
+        <p><strong>➕ Agregar fila:</strong> Presiona <kbd>Enter</kbd> al llenar una fila.</p>
+        <p><strong>➕ Agregar columna:</strong> Usa el botón ➕ al final del encabezado.</p>
+      </div>
+    </div>
   <script>
     function copiarID() {
       const id = document.getElementById('inventoryID').innerText;
@@ -554,29 +573,44 @@ function guardarTabla() {
     }
 
     datos.push(filaDatos);
+    });
+
+    const host = window.location.hostname
+    fetch(`http://${host}:3000/api/inventario/actualizar`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ filas: datos, inventarioId: localStorage.getItem("inventarioActual") }) // o el ID que uses
+    })
+    .then(res => res.json())
+    .then(res => alert("Inventario actualizado correctamente"))
+    .catch(err => {
+      console.error("Error al guardar:", err);
+      alert("Error al guardar la tabla");
+    });
+  }
+
+  document.querySelector(".btn-cerrar").addEventListener("click", function () {
+    const input = document.getElementById("searchInput");
+    input.value = "";
+    searchTable(); // Reaplica el filtro (muestra todo)
   });
 
-  const host = window.location.hostname
-  fetch(`http://${host}:3000/api/inventario/actualizar`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ filas: datos, inventarioId: localStorage.getItem("inventarioActual") }) // o el ID que uses
-  })
-  .then(res => res.json())
-  .then(res => alert("Inventario actualizado correctamente"))
-  .catch(err => {
-    console.error("Error al guardar:", err);
-    alert("Error al guardar la tabla");
+  // Manual de usuario
+  document.getElementById("botonAyuda").addEventListener("click", function () {
+    document.getElementById("manualModal").style.display = "block";
   });
-}
 
-document.querySelector(".btn-cerrar").addEventListener("click", function () {
-  const input = document.getElementById("searchInput");
-  input.value = "";
-  searchTable(); // Reaplica el filtro (muestra todo)
-});
+  document.querySelector(".cerrar-modal").addEventListener("click", function () {
+    document.getElementById("manualModal").style.display = "none";
+  });
 
+  window.addEventListener("click", function (e) {
+    const modal = document.getElementById("manualModal");
+    if (e.target === modal) {
+      modal.style.display = "none";
+    }
+  });
 
-  </script>
+</script>
 </body>
 </html>

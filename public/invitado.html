@@ -26,7 +26,7 @@
         <div>
           <p class="id-label"><strong>ID del Inventario:</strong></p>
           <div class="id-contenedor">
-            <span id="inventoryID">23DT53Y7U6</span>
+            <span id="inventoryID">ID_Inventario</span>
             <button onclick="copiarID()">📋</button>
           </div>
         </div>
@@ -103,9 +103,12 @@
 
       const titulo = document.getElementById("nombreEncabezado");
       const desc = document.getElementById("descript");
+      //Este no se obtiene de server.js, sino de memoria local
+      const id = document.getElementById("inventoryID");
 
       titulo.innerText = data.nombre;
       desc.innerText = data.descripcion;
+      id.innerText = inventactual;
 
     });
 

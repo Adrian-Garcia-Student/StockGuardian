@@ -258,6 +258,51 @@ app.get("/recuperarinventario/:id", async (req, res) => {
   }
 });
 
+//Cargar las filas y columnas del inventario
+app.get("/api/inventario/obtener", async (req, res) => {
+  const { inventarioId } = req.query;
+
+  if (!inventarioId) {
+    return res.status(400).json({ error: "Falta el ID del inventario" });
+  }
+
+  try {
+    const params = {
+      TableName: "Inventarios",
+      KeyConditionExpression: "ID_Inventario = :id",
+      ExpressionAttributeValues: {
+        ":id": inventarioId
+      }
+    };
+
+    const resultado = await ddbDocClient.send(new QueryCommand(params));
+
+    const columnasSet = new Set();
+    const filasLimpias = resultado.Items.map(item => {
+      const fila = {};
+      for (const clave in item.datos) {
+        const tipo = Object.keys(item.datos[clave])[0];
+        const valor = item.datos[clave][tipo];
+        fila[clave] = valor;
+        columnasSet.add(clave);
+      }
+      return {
+        ID_Fila: item.ID_Fila,
+        datos: fila
+      };
+    });
+
+    const columnas = Array.from(columnasSet);
+
+    return res.json({ columnas, filas: filasLimpias });
+
+  } catch (err) {
+    console.error("Error al obtener inventario:", err);
+    return res.status(500).json({ error: "Error al consultar inventario" });
+  }
+});
+
+
 // Guardar (sobreescribir) los datos de un inventario
 app.post("/api/inventario/actualizar", async (req, res) => {
   const { filas, inventarioId } = req.body;

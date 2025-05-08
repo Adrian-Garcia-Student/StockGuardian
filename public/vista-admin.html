@@ -9,7 +9,7 @@
 </head>
 <body>
   <header class="encabezado">
-    <h1 id="nombreEncabezado">LATOSOS CO</h1>
+    <h1 id="nombreEncabezado">...</h1>
     <img src="GuardianIcon.png" alt="Escudo" class="icono-escudo">
   </header>
 
@@ -110,6 +110,87 @@
       titulo.innerText = data.nombre;
       desc.innerText = data.descripcion;
 
+    });
+
+    //Cargar filas y columnas del inventario
+    document.addEventListener("DOMContentLoaded", async () => {
+      const inventarioId = localStorage.getItem("inventarioActual");
+      if (!inventarioId) {
+        document.getElementById("mensajePlaceholder").textContent = "No se ha seleccionado inventario.";
+        return;
+      }
+
+      try {
+        const res = await fetch(`http://${window.location.hostname}:3000/api/inventario/obtener?inventarioId=${inventarioId}`);
+        const { columnas, filas } = await res.json();
+
+        const contenedor = document.getElementById("tablaContenedor");
+        contenedor.innerHTML = "";
+
+        // Crear tabla
+        const tabla = document.createElement("table");
+        tabla.id = "inventoryTable";
+
+        // ==== THEAD ====
+        const thead = document.createElement("thead");
+        const trHead = document.createElement("tr");
+
+        // Columna de borrar
+        trHead.appendChild(document.createElement("th"));
+
+        // Cabeceras dinámicas
+        columnas.forEach(col => {
+          const th = document.createElement("th");
+          th.textContent = col;
+          trHead.appendChild(th);
+        });
+
+        // Botón ➕ para agregar columna
+        const thAdd = document.createElement("th");
+        thAdd.innerHTML = `<button onclick="agregarColumna()">➕</button>`;
+        trHead.appendChild(thAdd);
+
+        thead.appendChild(trHead);
+        tabla.appendChild(thead);
+
+        // ==== TBODY ====
+        const tbody = document.createElement("tbody");
+
+        // Filas de datos
+        filas.forEach(filaObj => {
+          const tr = document.createElement("tr");
+
+          // Botón ❌ eliminar fila
+          const tdDel = document.createElement("td");
+          tdDel.innerHTML = `<button onclick="eliminarFila(this)">❌</button>`;
+          tr.appendChild(tdDel);
+
+          // Celdas según columnas
+          columnas.forEach(col => {
+            const td = document.createElement("td");
+            td.textContent = filaObj.datos[col] || "";
+            tr.appendChild(td);
+          });
+
+          tbody.appendChild(tr);
+        });
+
+        // Fila ➕ para agregar nueva fila
+        const trAdd = document.createElement("tr");
+        trAdd.innerHTML = `<td><button onclick="agregarFila()">➕</button></td>` +
+                          `<td colspan="${columnas.length}"></td>`;
+        tbody.appendChild(trAdd);
+
+        tabla.appendChild(tbody);
+        contenedor.appendChild(tabla);
+
+        // Activa todos los manejadores de edición, búsqueda, etc.
+        habilitarEdicionTabla();
+      }
+      catch (err) {
+        console.error("Error cargando inventario:", err);
+        document.getElementById("mensajePlaceholder").textContent = "Error al cargar inventario.";
+      }
     });
 
     function searchTable() {
@@ -600,7 +681,7 @@ function guardarTabla() {
     fetch(`http://${host}:3000/api/inventario/actualizar`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ filas: datos, inventarioId: localStorage.getItem("inventarioActual") }) // o el ID que uses
+      body: JSON.stringify({ filas: datos, inventarioId: localStorage.getItem("inventarioActual") })
     })
     .then(res => res.json())
     .then(res => alert("Inventario actualizado correctamente"))

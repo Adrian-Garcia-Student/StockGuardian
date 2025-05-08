@@ -232,7 +232,10 @@ app.get("/recuperarinventario/:id", async (req, res) => {
       ExpressionAttributeValues: {
         ':id': id
       },
-      ProjectionExpression: "Nombre, Descripción"
+      ProjectionExpression: "Nombre, #descripcion",
+      ExpressionAttributeNames: {
+        "#descripcion": "Descripción"
+      }
     })
 
     const resultado = await ddbDocClient.send(comando);

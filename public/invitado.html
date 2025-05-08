@@ -89,6 +89,30 @@
   </main>
 
   <script>
+
+    //Cargar datos del inventario
+    document.addEventListener("DOMContentLoaded", async function() {
+
+      const inventactual = localStorage.getItem("inventarioActual");
+
+      if (!inventactual) {
+        console.error("No se encontró el ID del inventario en localStorage");
+        return;
+      }
+
+      const host = window.location.hostname;
+      const respuesta = await fetch(`http://${host}:3000/recuperarinventario/${inventactual}`);
+      const data = await respuesta.json();
+
+      const titulo = document.getElementById("nombreEncabezado");
+      const desc = document.getElementById("descript");
+
+      titulo.innerText = data.nombre;
+      desc.innerText = data.descripcion;
+
+    });
+
+
     function copiarID() {
       const id = document.getElementById("inventoryID").innerText;
       navigator.clipboard.writeText(id);

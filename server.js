@@ -237,17 +237,16 @@ app.get("/recuperarinventario/:id", async (req, res) => {
 
     const resultado = await ddbDocClient.send(comando);
 
+    console.log("Resultado de la consulta:", resultado.Items);
+
     if (resultado.Items.length === 0) {
       return res.status(404).json({ mensaje: "Inventario no encontrado" });
     }
 
     const item = resultado.Items[0]; //Obtener primer item del query
-    const nombre = item.Nombre?.S || ""; //Guardar en primer variable el nombre, si no existe queda en blanco
-    const descripcion = item.Descripción?.S || ""; //Guardar en segunda variable la descripción, si no existe queda en blanco
+    const nombre = item.Nombre/*?.S*/ || ""; //Guardar en primer variable el nombre, si no existe queda en blanco
+    const descripcion = item.Descripción/*?.S*/ || ""; //Guardar en segunda variable la descripción, si no existe queda en blanco
 
-    console.log("Nombre:" + nombre);
-    console.log("Descripcion:" + descripcion);
-    
     res.json({ nombre, descripcion }); //Responde con las dos variables en json
 
   } catch (error) {

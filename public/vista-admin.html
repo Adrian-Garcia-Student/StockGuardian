@@ -101,7 +101,7 @@
       }
 
       const host = window.location.hostname;
-      const respuesta = await fetch(`http://${host}:3000/verificarinventario/${inventactual}`);
+      const respuesta = await fetch(`http://${host}:3000/recuperarinventario/${inventactual}`);
       const data = await respuesta.json();
 
       const titulo = document.getElementById("nombreEncabezado");

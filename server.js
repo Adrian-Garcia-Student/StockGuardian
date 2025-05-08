@@ -363,11 +363,11 @@ app.post("/api/inventario/actualizar", async (req, res) => {
   }
 });
 
-//Borrar un inventario. Se borrarán sus datos básicos y filas
+// Borrar un inventario. Se borrarán sus datos básicos y filas
 app.delete("/api/inventario/eliminar", async (req, res) => {
-  const { inventarioId, idCreador } = req.query;
-  if (!inventarioId || !idCreador) {
-    return res.status(400).json({ error: "inventarioId e idCreador son requeridos" });
+  const { inventarioId } = req.query;
+  if (!inventarioId) {
+    return res.status(400).json({ error: "inventarioId es requerido" });
   }
 
   try {
@@ -375,8 +375,7 @@ app.delete("/api/inventario/eliminar", async (req, res) => {
     await ddbDocClient.send(new DeleteCommand({
       TableName: "DatosInventario",
       Key: { 
-        ID_Inventario: inventarioId,
-        ID_Creador:    idCreador 
+        ID_Inventario: inventarioId
       }
     }));
 
@@ -384,8 +383,11 @@ app.delete("/api/inventario/eliminar", async (req, res) => {
     const queryResp = await ddbDocClient.send(new QueryCommand({
       TableName: "Inventarios",
       KeyConditionExpression: "ID_Inventario = :id",
-      ExpressionAttributeValues: { ":id": inventarioId }
+      ExpressionAttributeValues: {
+        ":id": inventarioId
+      }
     }));
+
     const items = queryResp.Items || [];
 
     // 3) Preparar DeleteRequests para cada fila
@@ -393,7 +395,7 @@ app.delete("/api/inventario/eliminar", async (req, res) => {
       DeleteRequest: {
         Key: {
           ID_Inventario: item.ID_Inventario,
-          ID_Fila:       item.ID_Fila
+          ID_Fila: item.ID_Fila
         }
       }
     }));

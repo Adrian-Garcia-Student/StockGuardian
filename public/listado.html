@@ -56,38 +56,37 @@
       idAEliminar = "";
     }
 
-  async function confirmarEliminacion() {
-  const idCreador = localStorage.getItem("idUsuario");
-  const host = window.location.hostname;
+    async function confirmarEliminacion() {
+      const host = window.location.hostname;
 
-  try {
-    //Llamar a server.js para ejecutar la eliminación
-    const res = await fetch(
-      `http://${host}:3000/api/inventario/eliminar?inventarioId=${idAEliminar}&idCreador=${idCreador}`,
-      { method: "DELETE" }
-    );
+      try {
+        //Llamar a server.js para ejecutar la eliminación
+        const res = await fetch(
+          `http://${host}:3000/api/inventario/eliminar?inventarioId=${idAEliminar}`,
+          { method: "DELETE" }
+        );
 
-    if (!res.ok) {
-      const data = await res.json();
-      throw new Error(data.error || "Error eliminando inventario");
+        if (!res.ok) {
+          const data = await res.json();
+          throw new Error(data.error || "Error eliminando inventario");
+        }
+
+        //Cerrar modal
+        cerrarModal();
+
+        //Eliminar visualmente la fila correspondiente del DOM según el ID encontrado en el 'span' de html
+        document.querySelectorAll(".fila").forEach(fila => {
+          const spanID = fila.children[1]?.innerText.split(" ")[0]; 
+          if (spanID === idAEliminar) fila.remove();
+        });
+
+        alert("Inventario eliminado correctamente");
+      } catch (err) {
+        console.error(err);
+        alert("No se pudo eliminar el inventario: " + err.message);
+        cerrarModal();
+      }
     }
-
-    //Cerrar modal
-    cerrarModal();
-
-    //Eliminar visualmente la fila correspondiente del DOM según el ID encontrado en el 'span' de html
-    document.querySelectorAll(".fila").forEach(fila => {
-      const spanID = fila.children[1]?.innerText.split(" ")[0]; 
-      if (spanID === idAEliminar) fila.remove();
-    });
-
-    alert("Inventario eliminado correctamente");
-  } catch (err) {
-    console.error(err);
-    alert("No se pudo eliminar el inventario: " + err.message);
-    cerrarModal();
-  }
-}
 
     document.addEventListener("DOMContentLoaded", function() {
       async function cargarInventarios() {

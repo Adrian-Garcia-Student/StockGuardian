@@ -75,85 +75,64 @@
 
     //Cargar filas y columnas del inventario
     document.addEventListener("DOMContentLoaded", async () => {
-      const inventarioId = localStorage.getItem("inventarioActual");
-      if (!inventarioId) {
-        document.getElementById("mensajePlaceholder").textContent = "No se ha seleccionado inventario.";
-        return;
-      }
+  const inventarioId = localStorage.getItem("inventarioActual");
+  if (!inventarioId) {
+    document.getElementById("mensajePlaceholder").textContent = "No se ha seleccionado inventario.";
+    return;
+  }
 
-      try {
-        const host = window.location.hostname;
-        const res = await fetch(`http://${host}:3000/api/inventario/obtener?inventarioId=${inventarioId}`);
-        const { columnas, filas } = await res.json();
+  try {
+    const host = window.location.hostname;
+    const res = await fetch(`http://${host}:3000/api/inventario/obtener?inventarioId=${inventarioId}`);
+    const { columnas, filas } = await res.json();
 
-        const contenedor = document.getElementById("tablaContenedor");
-        contenedor.innerHTML = "";
+    const contenedor = document.getElementById("tablaContenedor");
+    contenedor.innerHTML = "";
 
-        // Crear tabla
-        const tabla = document.createElement("table");
-        tabla.id = "inventoryTable";
+    // Crear tabla
+    const tabla = document.createElement("table");
+    tabla.id = "inventoryTable";
 
-        // ==== THEAD ====
-        const thead = document.createElement("thead");
-        const trHead = document.createElement("tr");
+    // ==== THEAD ====
+    const thead = document.createElement("thead");
+    const trHead = document.createElement("tr");
 
-        // Columna de borrar
-        trHead.appendChild(document.createElement("th"));
-
-        // Cabeceras dinámicas
-        columnas.forEach(col => {
-          const th = document.createElement("th");
-          th.textContent = col;
-          trHead.appendChild(th);
-        });
-
-        // Botón ➕ para agregar columna
-        const thAdd = document.createElement("th");
-        thAdd.innerHTML = `<button onclick="agregarColumna()">➕</button>`;
-        trHead.appendChild(thAdd);
-
-        thead.appendChild(trHead);
-        tabla.appendChild(thead);
-
-        // ==== TBODY ====
-        const tbody = document.createElement("tbody");
-
-        // Filas de datos
-        filas.forEach(filaObj => {
-          const tr = document.createElement("tr");
-
-          // Botón ❌ eliminar fila
-          const tdDel = document.createElement("td");
-          tdDel.innerHTML = `<button onclick="eliminarFila(this)">❌</button>`;
-          tr.appendChild(tdDel);
-
-          // Celdas según columnas
-          columnas.forEach(col => {
-            const td = document.createElement("td");
-            td.textContent = filaObj.datos[col] || "";
-            tr.appendChild(td);
-          });
-
-          tbody.appendChild(tr);
-        });
-
-        // Fila ➕ para agregar nueva fila
-        const trAdd = document.createElement("tr");
-        trAdd.innerHTML = `<td><button onclick="agregarFila()">➕</button></td>` +
-                          `<td colspan="${columnas.length}"></td>`;
-        tbody.appendChild(trAdd);
-
-        tabla.appendChild(tbody);
-        contenedor.appendChild(tabla);
-
-        // Activa todos los manejadores de edición, búsqueda, etc.
-        habilitarEdicionTabla();
-      }
-      catch (err) {
-        console.error("Error cargando inventario:", err);
-        document.getElementById("mensajePlaceholder").textContent = "Error al cargar inventario.";
-      }
+    // Cabeceras dinámicas (sin columna para borrar ni agregar)
+    columnas.forEach(col => {
+      const th = document.createElement("th");
+      th.textContent = col;
+      trHead.appendChild(th);
     });
+
+    thead.appendChild(trHead);
+    tabla.appendChild(thead);
+
+    // ==== TBODY ====
+    const tbody = document.createElement("tbody");
+
+    // Filas de datos
+    filas.forEach(filaObj => {
+      const tr = document.createElement("tr");
+
+      // Celdas según columnas
+      columnas.forEach(col => {
+        const td = document.createElement("td");
+        td.textContent = filaObj.datos[col] || "";
+        tr.appendChild(td);
+      });
+
+      tbody.appendChild(tr);
+    });
+
+    tabla.appendChild(tbody);
+    contenedor.appendChild(tabla);
+
+  } catch (err) {
+    console.error("Error cargando inventario:", err);
+    document.getElementById("mensajePlaceholder").textContent = "Error al cargar inventario.";
+  }
+});
+
 
 
     function copiarID() {

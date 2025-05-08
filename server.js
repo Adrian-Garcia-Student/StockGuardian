@@ -261,43 +261,28 @@ app.get("/recuperarinventario/:id", async (req, res) => {
 //Cargar las filas y columnas del inventario
 app.get("/api/inventario/obtener", async (req, res) => {
   const { inventarioId } = req.query;
-
-  if (!inventarioId) {
-    return res.status(400).json({ error: "Falta el ID del inventario" });
-  }
+  if (!inventarioId) return res.status(400).json({ error: "Falta el ID del inventario" });
 
   try {
-    const params = {
+    const resultado = await ddbDocClient.send(new QueryCommand({
       TableName: "Inventarios",
       KeyConditionExpression: "ID_Inventario = :id",
-      ExpressionAttributeValues: {
-        ":id": inventarioId
-      }
-    };
-
-    const resultado = await ddbDocClient.send(new QueryCommand(params));
+      ExpressionAttributeValues: { ":id": inventarioId }
+    }));
 
     const columnasSet = new Set();
     const filasLimpias = resultado.Items.map(item => {
-      const fila = {};
-      for (const clave in item.datos) {
-        const tipo = Object.keys(item.datos[clave])[0];
-        const valor = item.datos[clave][tipo];
-        fila[clave] = valor;
-        columnasSet.add(clave);
-      }
+      Object.keys(item.datos).forEach(col => columnasSet.add(col));
       return {
         ID_Fila: item.ID_Fila,
-        datos: fila
+        datos: item.datos   // <-- directamente
       };
     });
 
     const columnas = Array.from(columnasSet);
-
     return res.json({ columnas, filas: filasLimpias });
-
   } catch (err) {
-    console.error("Error al obtener inventario:", err);
+    console.error("Error al consultar inventario:", err);
     return res.status(500).json({ error: "Error al consultar inventario" });
   }
 });

@@ -121,7 +121,8 @@
       }
 
       try {
-        const res = await fetch(`http://${window.location.hostname}:3000/api/inventario/obtener?inventarioId=${inventarioId}`);
+        const host = window.location.hostname;
+        const res = await fetch(`http://${host}:3000/api/inventario/obtener?inventarioId=${inventarioId}`);
         const { columnas, filas } = await res.json();
 
         const contenedor = document.getElementById("tablaContenedor");

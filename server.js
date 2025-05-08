@@ -363,6 +363,56 @@ app.post("/api/inventario/actualizar", async (req, res) => {
   }
 });
 
+//Borrar un inventario. Se borrarán sus datos básicos y filas
+app.delete("/api/inventario/eliminar", async (req, res) => {
+  const { inventarioId, idCreador } = req.query;
+  if (!inventarioId || !idCreador) {
+    return res.status(400).json({ error: "inventarioId e idCreador son requeridos" });
+  }
+
+  try {
+    // 1) Borrar el registro principal de DatosInventario
+    await ddbDocClient.send(new DeleteCommand({
+      TableName: "DatosInventario",
+      Key: { 
+        ID_Inventario: inventarioId,
+        ID_Creador:    idCreador 
+      }
+    }));
+
+    // 2) Consultar todas las filas en la tabla Inventarios
+    const queryResp = await ddbDocClient.send(new QueryCommand({
+      TableName: "Inventarios",
+      KeyConditionExpression: "ID_Inventario = :id",
+      ExpressionAttributeValues: { ":id": inventarioId }
+    }));
+    const items = queryResp.Items || [];
+
+    // 3) Preparar DeleteRequests para cada fila
+    const deleteRequests = items.map(item => ({
+      DeleteRequest: {
+        Key: {
+          ID_Inventario: item.ID_Inventario,
+          ID_Fila:       item.ID_Fila
+        }
+      }
+    }));
+
+    // 4) Enviar en lotes de 25
+    for (let i = 0; i < deleteRequests.length; i += 25) {
+      const lote = deleteRequests.slice(i, i + 25);
+      await ddbDocClient.send(new BatchWriteCommand({
+        RequestItems: { Inventarios: lote }
+      }));
+    }
+
+    return res.json({ mensaje: "Inventario eliminado correctamente" });
+  } catch (err) {
+    console.error("Error al eliminar inventario:", err);
+    return res.status(500).json({ error: "Error al eliminar inventario" });
+  }
+});
+
 
 //Generador de IDs de aleatorios
 function generarID(longitud = 8) {

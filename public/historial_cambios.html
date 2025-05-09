@@ -57,7 +57,7 @@
 
       try {
         const host = window.location.hostname;
-        const res = await fetch(`http://${host}:3000/api/historial?inventarioId=${inventarioId}`);
+        const res = await fetch(`http://${host}:3000/api/historial/obtener?inventarioId=${inventarioId}`);
         const { historial } = await res.json();
 
         if (!historial.length) {

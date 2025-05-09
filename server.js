@@ -189,7 +189,7 @@ app.get("/datosinventario/:idCreador", async (req, res) => {
     const enriched = await Promise.all(inventarios.map(async inv => {
       // Query el historial más reciente
       const histResp = await ddbDocClient.send(new QueryCommand({
-        TableName: "HistorialCambios",
+        TableName: "Historial",
         IndexName: "ByInventario",
         KeyConditionExpression: "ID_Inventario = :i",
         ExpressionAttributeValues: { ":i": inv.ID_Inventario },

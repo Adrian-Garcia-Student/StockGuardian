@@ -218,7 +218,7 @@
 
   function eliminarFila(boton) {
     const fila = boton.closest("tr");
-    registrarCambioHistorial(null, "ELIMINAR");
+    registrarCambioHistorial("--", "ELIMINAR");
     fila.remove();
   }
 
@@ -228,6 +228,8 @@
 
     const ths = tabla.querySelectorAll("thead th");
     if (index <= 0 || index >= ths.length - 1) return; // No eliminar ❌ ni ➕
+
+    const nombreColumna = ths[index].textContent.trim(); //Recuperar nombre de la columna a eliminar
 
     // 1. Eliminar th correspondiente
     ths[index].remove();
@@ -241,7 +243,7 @@
       }
     });
 
-    registrarCambioHistorial(null, "ELIMINAR_COLUMNA");
+    registrarCambioHistorial(nombreColumna, "ELIMINAR_COLUMNA");
   }
 
 
@@ -523,7 +525,7 @@
       }
     });
 
-    registrarCambioHistorial(null, "AGREGAR_COLUMNA");
+    registrarCambioHistorial("--", "AGREGAR_COLUMNA");
     habilitarEdicionTabla(); // Reactivar la edición con doble clic para nuevas columnas
   }
 
@@ -586,7 +588,7 @@
       tabla.appendChild(tbody);
       tablaContenedor.appendChild(tabla);
 
-      registrarCambioHistorial(null, "IMPORTAR");
+      registrarCambioHistorial("--", "IMPORTAR");
       habilitarEdicionTabla();
       event.target.value = ""; // reset input file
     };
@@ -611,7 +613,7 @@
     id_usuario: localStorage.getItem("idUsuario") || null,
     tipo_accion: tipoAccion
   };
-  
+
   fetch(`http://${host}:3000/api/historial`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -670,11 +672,11 @@ function crearTablaDesdeCero() {
 
   document.getElementById("formularioCrear").style.display = "none";
   document.getElementById("camposPersonalizados").value = "";
-  registrarCambioHistorial(null, "CREAR DESDE CERO");
+  registrarCambioHistorial("--", "CREAR DESDE CERO");
   habilitarEdicionTabla();
 }
 
-
+//Guardar la info de la tabla
 function guardarTabla() {
   const tabla = document.getElementById("inventoryTable");
   const filas = tabla.querySelectorAll("tbody tr");
@@ -708,6 +710,8 @@ function guardarTabla() {
       console.error("Error al guardar:", err);
       alert("Error al guardar la tabla");
     });
+
+    registrarCambioHistorial("--", "INVENTARIO GUARDADO");
   }
 
   document.querySelector(".btn-cerrar").addEventListener("click", function () {

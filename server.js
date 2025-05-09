@@ -415,8 +415,69 @@ app.delete("/api/inventario/eliminar", async (req, res) => {
   }
 });
 
+//Guardar un cambio en el la DB de historial
+app.post("/api/historial", async (req, res) => {
+  const {
+    columna_afectada,
+    fecha_accion,
+    id_inventario,
+    id_usuario,
+    tipo_accion
+  } = req.body;
 
-//Generador de IDs de aleatorios
+  if (!fecha_accion || !id_inventario || !tipo_accion) {
+    return res.status(400).json({ error: "Faltan campos obligatorios" });
+  }
+
+  try {
+    // Generamos un ID único para este historial
+    const idHistorial =generarID();
+
+    await ddbDocClient.send(new PutCommand({
+      TableName: "Historial",
+      Item: {
+        ID_Historial:     idHistorial,
+        ID_Inventario:    id_inventario,
+        Fecha_Accion:     fecha_accion,
+        Columna_Afectada: columna_afectada || null,
+        ID_Usuario:       id_usuario      || null,
+        Tipo_Accion:      tipo_accion
+      }
+    }));
+
+    return res.json({ mensaje: "Cambio registrado", ID_Historial: idHistorial });
+  } catch (err) {
+    console.error("Error al guardar historial:", err);
+    return res.status(500).json({ error: "Error al guardar historial" });
+  }
+});
+
+//Recuperar todos los cambios de un historial según el inventario
+app.get("/api/historial/obtener", async (req, res) => {
+  const { inventarioId } = req.query;
+  if (!inventarioId) {
+    return res.status(400).json({ error: "inventarioId es requerido" });
+  }
+
+  try {
+    const resultado = await ddbDocClient.send(new QueryCommand({
+      TableName: "Historial",
+      IndexName: "ByInventario", 
+      KeyConditionExpression: "ID_Inventario = :inv",
+      ExpressionAttributeValues: { ":inv": inventarioId },
+      ScanIndexForward: false
+    }));
+
+    // Devolver el array de items tal cual
+    return res.json({ historial: resultado.Items || [] });
+  } catch (err) {
+    console.error("Error al obtener historial:", err);
+    return res.status(500).json({ error: "Error al consultar historial" });
+  }
+});
+
+
+//Generador de IDs aleatorios
 function generarID(longitud = 8) {
   const caracteres = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
   let id = "";

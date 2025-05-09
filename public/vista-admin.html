@@ -602,18 +602,33 @@
 
   // Función para guardar un nuevo cambio en localStorage
   function registrarCambioHistorial(columna, tipoAccion) {
-    const historial = JSON.parse(localStorage.getItem("historialCambios")) || [];
-    const nuevoCambio = {
-      id: historial.length,
-      columna_afectada: columna || null,
-      fecha_accion: obtenerFechaActual(),
-      id_inventario: document.getElementById("inventoryID").innerText.trim(),
-      id_usuario: null, // se puede actualizar más adelante si se tiene login
-      tipo_accion: tipoAccion
-    };
-    historial.push(nuevoCambio);
-    localStorage.setItem("historialCambios", JSON.stringify(historial));
-  }
+  const host = window.location.hostname;
+
+  const nuevoCambio = {
+    columna_afectada: columna || null,
+    fecha_accion: obtenerFechaActual(),
+    id_inventario: document.getElementById("inventoryID").innerText.trim(),
+    id_usuario: localStorage.getItem("idUsuario") || null,
+    tipo_accion: tipoAccion
+  };
+  
+  fetch(`http://${host}:3000/api/historial`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(nuevoCambio)
+  })
+  .then(res => {
+    if (!res.ok) return res.json().then(data => { throw new Error(data.error || "Error registrando cambio"); });
+    return res.json();
+  })
+  .then(data => {
+    console.log("Historial registrado:", data);
+  })
+  .catch(err => {
+    console.error("No se pudo registrar el historial:", err);
+  });
+}
+
 
   function mostrarFormularioCrear() {
   document.getElementById("formularioCrear").style.display = "block";

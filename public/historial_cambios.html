@@ -46,24 +46,40 @@
     </div>
   </div>
   <script>
-    document.addEventListener("DOMContentLoaded", function () {
-      const historial = JSON.parse(localStorage.getItem("historialCambios")) || [];
+    document.addEventListener("DOMContentLoaded", async () => {
+      const inventarioId = localStorage.getItem("inventarioActual");
       const tbody = document.getElementById("historialBody");
 
-      historial.forEach(entry => {
-        const fila = document.createElement("tr");
+      if (!inventarioId) {
+        tbody.innerHTML = `<tr><td colspan="6">No se ha seleccionado inventario.</td></tr>`;
+        return;
+      }
 
-        fila.innerHTML = `
-          <td>${entry.id}</td>
-          <td>${entry.columna_afectada || 'NULL'}</td>
-          <td>${entry.fecha_accion}</td>
-          <td>${entry.id_inventario}</td>
-          <td>${entry.id_usuario || 'NULL'}</td>
-          <td>${entry.tipo_accion}</td>
-        `;
+      try {
+        const host = window.location.hostname;
+        const res = await fetch(`http://${host}:3000/api/historial?inventarioId=${inventarioId}`);
+        const { historial } = await res.json();
 
-        tbody.appendChild(fila);
-      });
+        if (!historial.length) {
+          tbody.innerHTML = `<tr><td colspan="6">No hay historial para este inventario.</td></tr>`;
+        } else {
+          historial.forEach(entry => {
+            const tr = document.createElement("tr");
+            tr.innerHTML = `
+              <td>${entry.ID_Historial}</td>
+              <td>${entry.Columna_Afectada || 'NULL'}</td>
+              <td>${entry.Fecha_Accion}</td>
+              <td>${entry.ID_Inventario}</td>
+              <td>${entry.ID_Usuario || 'NULL'}</td>
+              <td>${entry.Tipo_Accion}</td>
+            `;
+            tbody.appendChild(tr);
+          });
+        }
+      } catch (err) {
+        console.error("Error cargando historial:", err);
+        tbody.innerHTML = `<tr><td colspan="6">Error al cargar historial.</td></tr>`;
+      }
     });
 
     function exportarHistorialCSV() {

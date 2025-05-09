@@ -108,7 +108,11 @@
           fila.innerHTML = `
             <span>${inventario.Nombre}</span>
             <span>${inventario.ID_Inventario} <button onclick="copiarID('${inventario.ID_Inventario}')">📋</button></span>
-            <span>${inventario.FechaModificacion || "No disponible"}</span>
+            <span>
+              ${inventario.FechaModificacion
+                ? new Date(inventario.FechaModificacion).toLocaleString()
+                : "No disponible"}
+            </span>
             <span><button class="eliminar-btn" onclick="mostrarConfirmacion('${inventario.ID_Inventario}')">🗑️</button></span>
           `;
           

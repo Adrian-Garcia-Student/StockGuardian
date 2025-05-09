@@ -172,23 +172,38 @@ app.post("/datosinventario", async (req, res) => {
   }
 });
 
-//Obtener los inventarios del usuario actual
+//Obtener los inventarios del usuario actual (la ultima modificacion viene del historial)
 app.get("/datosinventario/:idCreador", async (req, res) => {
   const { idCreador } = req.params;
-
   try {
-    const comando = new QueryCommand({
+    //Llamar a inventarios
+    const invResp = await ddbDocClient.send(new QueryCommand({
       TableName: "DatosInventario",
       IndexName: "InventariosPorCreador",
-      KeyConditionExpression: "ID_Creador = :id",
-      ExpressionAttributeValues: {
-        ":id": idCreador,
-      },
-    });
+      KeyConditionExpression: "ID_Creador = :c",
+      ExpressionAttributeValues: { ":c": idCreador }
+    }));
+    const inventarios = invResp.Items || [];
 
-    const resultado = await ddbDocClient.send(comando);
+    //Para cada inventario, buscar último historial
+    const enriched = await Promise.all(inventarios.map(async inv => {
+      // Query el historial más reciente
+      const histResp = await ddbDocClient.send(new QueryCommand({
+        TableName: "HistorialCambios",
+        IndexName: "ByInventario",
+        KeyConditionExpression: "ID_Inventario = :i",
+        ExpressionAttributeValues: { ":i": inv.ID_Inventario },
+        ScanIndexForward: false, // descendente por Fecha_Accion
+        Limit: 1
+      }));
+      const last = histResp.Items && histResp.Items[0];
+      return {
+        ...inv,
+        FechaModificacion: last ? last.Fecha_Accion : null
+      };
+    }));
 
-    res.json({ datosinventario: resultado.Items });
+    return res.json({ datosinventario: enriched });
   } catch (error) {
     console.error("Error al obtener inventarios:", error);
     res.status(500).json({ mensaje: "Error del servidor." });

@@ -164,6 +164,19 @@
         tr[i].style.display = visible ? "" : "none";
       }
     }
+
+    document.addEventListener("DOMContentLoaded", function () {
+    const cerrarBtn = document.querySelector(".btn-cerrar");
+    const inputBusqueda = document.getElementById("searchInput");
+
+    if (cerrarBtn && inputBusqueda) {
+      cerrarBtn.addEventListener("click", function () {
+        inputBusqueda.value = "";
+        searchTable(); // vuelve a mostrar todo
+      });
+    }
+  });
+
   </script>
   
 </body>

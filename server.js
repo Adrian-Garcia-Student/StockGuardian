@@ -273,28 +273,45 @@ app.get("/recuperarinventario/:id", async (req, res) => {
   }
 });
 
-//Cargar las filas y columnas del inventario
+// Cargar las filas y columnas del inventario
 app.get("/api/inventario/obtener", async (req, res) => {
   const { inventarioId } = req.query;
   if (!inventarioId) return res.status(400).json({ error: "Falta el ID del inventario" });
 
   try {
+    // 1. Recuperar el orden de las columnas desde Inventarios_Metadata
+    const metaResult = await ddbDocClient.send(new GetCommand({
+      TableName: "Inventarios_Metadata",
+      Key: { ID_Inventario: inventarioId }
+    }));
+    const columnasOrdenadas = metaResult.Item?.Columnas || [];
+
+    // 2. Recuperar las filas del inventario
     const resultado = await ddbDocClient.send(new QueryCommand({
       TableName: "Inventarios",
       KeyConditionExpression: "ID_Inventario = :id",
       ExpressionAttributeValues: { ":id": inventarioId }
     }));
 
-    const columnasSet = new Set();
-    const filasLimpias = resultado.Items.map(item => {
-      Object.keys(item.datos).forEach(col => columnasSet.add(col));
-      return {
-        ID_Fila: item.ID_Fila,
-        datos: item.datos   // <-- directamente
-      };
-    });
+    // 3. Si no hay metadata, detectar columnas automáticamente
+    let columnas;
+    const items = resultado.Items || [];
 
-    const columnas = Array.from(columnasSet);
+    if (columnasOrdenadas.length > 0) {
+      columnas = columnasOrdenadas;
+    } else {
+      // Detectar columnas automáticamente si no hay orden en la metadata
+      const columnasSet = new Set();
+      items.forEach(item => Object.keys(item.datos).forEach(col => columnasSet.add(col)));
+      columnas = Array.from(columnasSet);
+    }
+
+    // 4. Preparar las filas
+    const filasLimpias = items.map(item => ({
+      ID_Fila: item.ID_Fila,
+      datos: item.datos   // Los datos directamente
+    }));
+
     return res.json({ columnas, filas: filasLimpias });
   } catch (err) {
     console.error("Error al consultar inventario:", err);
@@ -329,7 +346,7 @@ app.post("/api/inventario/actualizar", async (req, res) => {
       }
     }));
 
-    // 2. Ejecutar eliminaciones en lotes separados (máx 25 por lote)
+    // 2. Ejecutar eliminaciones en lotes (máx 25 por lote)
     const lotesEliminar = [];
     const copiaEliminaciones = [...eliminaciones];
     while (copiaEliminaciones.length > 0) {
@@ -338,9 +355,7 @@ app.post("/api/inventario/actualizar", async (req, res) => {
 
     for (const lote of lotesEliminar) {
       await ddbDocClient.send(new BatchWriteCommand({
-        RequestItems: {
-          Inventarios: lote
-        }
+        RequestItems: { Inventarios: lote }
       }));
     }
 
@@ -355,26 +370,33 @@ app.post("/api/inventario/actualizar", async (req, res) => {
       }
     }));
 
-    // 4. Ejecutar inserciones en lotes separados (máx 25 por lote)
-    const lotesInsertar = [];
+    // 4. Guardar las nuevas filas en lotes
+    const lotesGuardar = [];
     const copiaNuevasFilas = [...nuevasFilas];
     while (copiaNuevasFilas.length > 0) {
-      lotesInsertar.push(copiaNuevasFilas.splice(0, 25));
+      lotesGuardar.push(copiaNuevasFilas.splice(0, 25));
     }
 
-    for (const lote of lotesInsertar) {
+    for (const lote of lotesGuardar) {
       await ddbDocClient.send(new BatchWriteCommand({
-        RequestItems: {
-          Inventarios: lote
-        }
+        RequestItems: { Inventarios: lote }
       }));
     }
 
-    return res.json({ mensaje: "Inventario sobrescrito correctamente" });
+    // ✅ 5. Guardar el orden de las columnas en Inventarios_Metadata
+    const columnasOrdenadas = Object.keys(filas[0]);
+    await ddbDocClient.send(new PutCommand({
+      TableName: "Inventarios_Metadata",
+      Item: {
+        ID_Inventario: inventarioId,
+        Columnas: columnasOrdenadas
+      }
+    }));
 
+    return res.json({ mensaje: "Inventario actualizado correctamente" });
   } catch (err) {
     console.error("Error al actualizar inventario:", err);
-    return res.status(500).json({ error: "Error al actualizar" });
+    return res.status(500).json({ error: "Error al actualizar inventario" });
   }
 });
 

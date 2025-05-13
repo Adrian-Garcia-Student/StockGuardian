@@ -601,7 +601,9 @@
   // Función para obtener fecha en formato DD/MM/YY
   function obtenerFechaActual() {
     const hoy = new Date();
-    return hoy.toLocaleDateString("es-ES");
+    const fecha = hoy.toLocaleDateString("es-ES");
+    const hora = hoy.toLocaleTimeString("es-ES");
+    return `${fecha} ${hora}`;
   }
 
   // Función para guardar un nuevo cambio en localStorage

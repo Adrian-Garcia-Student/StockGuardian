@@ -346,7 +346,7 @@ app.post("/api/inventario/actualizar", async (req, res) => {
       }
     }));
 
-    // 2. Ejecutar eliminaciones en lotes (máx 25 por lote)
+    // 2. Ejecutar eliminaciones en lotes separados (máx 25 por lote)
     const lotesEliminar = [];
     const copiaEliminaciones = [...eliminaciones];
     while (copiaEliminaciones.length > 0) {
@@ -355,7 +355,9 @@ app.post("/api/inventario/actualizar", async (req, res) => {
 
     for (const lote of lotesEliminar) {
       await ddbDocClient.send(new BatchWriteCommand({
-        RequestItems: { Inventarios: lote }
+        RequestItems: {
+          Inventarios: lote
+        }
       }));
     }
 
@@ -370,21 +372,10 @@ app.post("/api/inventario/actualizar", async (req, res) => {
       }
     }));
 
-    // 4. Guardar las nuevas filas en lotes
-    const lotesGuardar = [];
-    const copiaNuevasFilas = [...nuevasFilas];
-    while (copiaNuevasFilas.length > 0) {
-      lotesGuardar.push(copiaNuevasFilas.splice(0, 25));
-    }
+    // 4. Obtener el orden de las columnas como el usuario las provee (sin ordenarlas)
+    const columnasOrdenadas = Object.keys(filas[0]);  // Orden que el usuario da en la primera fila
 
-    for (const lote of lotesGuardar) {
-      await ddbDocClient.send(new BatchWriteCommand({
-        RequestItems: { Inventarios: lote }
-      }));
-    }
-
-    // ✅ 5. Guardar el orden de las columnas en Inventarios_Metadata
-    const columnasOrdenadas = Object.keys(filas[0]);
+    // 5. Guardar las columnas en la tabla Inventarios_Metadata tal como vienen (sin ordenarlas)
     await ddbDocClient.send(new PutCommand({
       TableName: "Inventarios_Metadata",
       Item: {
@@ -393,7 +384,16 @@ app.post("/api/inventario/actualizar", async (req, res) => {
       }
     }));
 
-    return res.json({ mensaje: "Inventario actualizado correctamente" });
+    // 6. Guardar las nuevas filas en la tabla Inventarios
+    for (const lote of nuevasFilas) {
+      await ddbDocClient.send(new BatchWriteCommand({
+        RequestItems: {
+          Inventarios: [lote]
+        }
+      }));
+    }
+
+    return res.json({ message: "Inventario actualizado correctamente" });
   } catch (err) {
     console.error("Error al actualizar inventario:", err);
     return res.status(500).json({ error: "Error al actualizar inventario" });

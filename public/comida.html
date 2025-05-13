@@ -52,7 +52,6 @@
       const data = await response.json();
 
       if (response.ok) {
-        alert("Contraseña actualizada exitosamente.");
         localStorage.removeItem("emailTemp");
         localStorage.removeItem("passTemp");
         window.location.href = "login.html";

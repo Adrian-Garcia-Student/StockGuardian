@@ -322,46 +322,36 @@ app.get("/api/inventario/obtener", async (req, res) => {
 
 // Guardar (sobreescribir) los datos de un inventario
 app.post("/api/inventario/actualizar", async (req, res) => {
-  const { filas, inventarioId } = req.body;
+  const { filas, columnas, inventarioId } = req.body;
 
-  if (!filas || !Array.isArray(filas) || !inventarioId) {
+  if (
+    !filas || !Array.isArray(filas) ||
+    !columnas || !Array.isArray(columnas) ||
+    !inventarioId
+  ) {
     return res.status(400).json({ error: "Datos inválidos" });
   }
 
   try {
-    // 1. Consultar los datos existentes
+    // 1. Borrar datos anteriores
     const paramsConsulta = {
       TableName: "Inventarios",
       KeyConditionExpression: "ID_Inventario = :id",
       ExpressionAttributeValues: { ":id": inventarioId }
     };
-
     const datosAnteriores = await ddbDocClient.send(new QueryCommand(paramsConsulta));
     const eliminaciones = datosAnteriores.Items.map(item => ({
       DeleteRequest: {
-        Key: {
-          ID_Inventario: item.ID_Inventario,
-          ID_Fila: item.ID_Fila
-        }
+        Key: { ID_Inventario: item.ID_Inventario, ID_Fila: item.ID_Fila }
       }
     }));
-
-    // 2. Ejecutar eliminaciones en lotes separados (máx 25 por lote)
-    const lotesEliminar = [];
-    const copiaEliminaciones = [...eliminaciones];
-    while (copiaEliminaciones.length > 0) {
-      lotesEliminar.push(copiaEliminaciones.splice(0, 25));
+    // Lotes de hasta 25
+    while (eliminaciones.length) {
+      const lote = eliminaciones.splice(0, 25);
+      await ddbDocClient.send(new BatchWriteCommand({ RequestItems: { Inventarios: lote } }));
     }
 
-    for (const lote of lotesEliminar) {
-      await ddbDocClient.send(new BatchWriteCommand({
-        RequestItems: {
-          Inventarios: lote
-        }
-      }));
-    }
-
-    // 3. Preparar las nuevas filas
+    // 2. Guardar las nuevas filas
     const nuevasFilas = filas.map((fila, i) => ({
       PutRequest: {
         Item: {
@@ -371,27 +361,20 @@ app.post("/api/inventario/actualizar", async (req, res) => {
         }
       }
     }));
+    const loteGuardar = [];
+    nuevasFilas.forEach(pr => {
+      loteGuardar.push(pr);
+    });
+    while (loteGuardar.length) {
+      const lote = loteGuardar.splice(0, 25);
+      await ddbDocClient.send(new BatchWriteCommand({ RequestItems: { Inventarios: lote } }));
+    }
 
-    // 4. Obtener el orden de las columnas como el usuario las provee (sin ordenarlas)
-    const columnasOrdenadas = Object.keys(filas[0]);  // Orden que el usuario da en la primera fila
-
-    // 5. Guardar las columnas en la tabla Inventarios_Metadata tal como vienen (sin ordenarlas)
+    // 3. Guardar el array de columnas tal como viene del frontend
     await ddbDocClient.send(new PutCommand({
       TableName: "Inventarios_Metadata",
-      Item: {
-        ID_Inventario: inventarioId,
-        Columnas: columnasOrdenadas
-      }
+      Item: { ID_Inventario: inventarioId, Columnas: columnas }
     }));
-
-    // 6. Guardar las nuevas filas en la tabla Inventarios
-    for (const lote of nuevasFilas) {
-      await ddbDocClient.send(new BatchWriteCommand({
-        RequestItems: {
-          Inventarios: [lote]
-        }
-      }));
-    }
 
     return res.json({ message: "Inventario actualizado correctamente" });
   } catch (err) {

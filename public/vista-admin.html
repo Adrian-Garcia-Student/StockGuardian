@@ -685,43 +685,52 @@ function crearTablaDesdeCero() {
   habilitarEdicionTabla();
 }
 
-//Guardar la info de la tabla
+// Guardar la info de la tabla
 function guardarTabla() {
   const tabla = document.getElementById("inventoryTable");
   const filas = tabla.querySelectorAll("tbody tr");
-  const encabezados = Array.from(tabla.querySelectorAll("thead th")).slice(1, -1).map(th => th.textContent.trim());
+  // Capturamos los encabezados EN ORDEN tal como aparecen en el <thead>
+  const encabezados = Array.from(tabla.querySelectorAll("thead th"))
+    .slice(1, -1)      // quitas la primera y la última columna de acción
+    .map(th => th.textContent.trim());
 
   const datos = [];
-
   filas.forEach(fila => {
+    // ignorar filas “nueva” si tienen el botón ➕
     if (fila.querySelector("button")?.textContent === "➕") return;
 
     const filaDatos = {};
     const celdas = fila.querySelectorAll("td");
-
+    // recorremos las celdas según el array de encabezados
     for (let i = 1; i < encabezados.length + 1; i++) {
+      const header = encabezados[i - 1];
       const input = celdas[i].querySelector("input");
-      filaDatos[encabezados[i - 1]] = input ? input.value.trim() : celdas[i].textContent.trim();
+      filaDatos[header] = input 
+        ? input.value.trim() 
+        : celdas[i].textContent.trim();
     }
-
     datos.push(filaDatos);
-    });
+  });
 
-    const host = window.location.hostname
-    fetch(`http://${host}:3000/api/inventario/actualizar`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ filas: datos, inventarioId: localStorage.getItem("inventarioActual") })
+  const host = window.location.hostname;
+  fetch(`http://${host}:3000/api/inventario/actualizar`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      inventarioId: localStorage.getItem("inventarioActual"),
+      columnas: encabezados,   // <— enviamos el array de columnas
+      filas: datos
     })
-    .then(res => res.json())
-    .then(res => alert("Inventario actualizado correctamente"))
-    .catch(err => {
-      console.error("Error al guardar:", err);
-      alert("Error al guardar la tabla");
-    });
+  })
+  .then(res => res.json())
+  .then(res => alert("Inventario actualizado correctamente"))
+  .catch(err => {
+    console.error("Error al guardar:", err);
+    alert("Error al guardar la tabla");
+  });
 
-    registrarCambioHistorial("--", "INVENTARIO GUARDADO");
-  }
+  registrarCambioHistorial("--", "INVENTARIO GUARDADO");
+}
 
   document.querySelector(".btn-cerrar").addEventListener("click", function () {
     const input = document.getElementById("searchInput");

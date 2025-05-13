@@ -158,13 +158,13 @@
       }
     }
 
-    // Enlazar eventos onclick en todos los botones:
-    document.querySelectorAll("button[data-copy-id]").forEach(btn => {
-      btn.addEventListener("click", () => {
-        // data-copy-id puede ser una ID de elemento o el propio texto
-        copiarID(btn.dataset.copyId);
-      });
+   
+    document.body.addEventListener("click", e => {
+      const btn = e.target.closest("button[data-copy-id]");
+      if (!btn) return;
+      copiarID(btn.dataset.copyId);
     });
+
   </script>
 </body>
 </html>

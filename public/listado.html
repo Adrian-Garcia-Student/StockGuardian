@@ -41,14 +41,7 @@
   <script>
     let idAEliminar = "";
 
-    async function copiarID(id) {
-      try {
-        await navigator.clipboard.writeText(id);
-        console.log("ID copiado correctamente:", id);
-      } catch (err) {
-        console.error("Error al copiar el ID:", err);
-      }
-}
+   
 
 
     function mostrarConfirmacion(id) {
@@ -112,7 +105,7 @@
 
           fila.innerHTML = `
             <span>${inventario.Nombre}</span>
-            <span>${inventario.ID_Inventario} <button onclick="copiarID('${inventario.ID_Inventario}')">📋</button></span>
+            <span>${inventario.ID_Inventario} <button data-copy-id="${inventario.ID_Inventario}">📋</button></span>
             <span>
               ${inventario.FechaModificacion
                 ? new Date(inventario.FechaModificacion).toLocaleString()
@@ -131,6 +124,47 @@
       cargarInventarios();
     });
 
+  </script>
+
+  <script>
+    async function copiarID(idEl) {
+      try {
+        // Obtener el texto a copiar: puede venir de getElementById o del argumento
+        const texto = typeof idEl === "string"
+          ? document.getElementById(idEl)?.innerText || idEl
+          : (idEl.textContent || idEl.innerText || "");
+
+        if (!texto) throw new Error("No se encontró texto para copiar");
+
+        // Intentar Clipboard API
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          await navigator.clipboard.writeText(texto);
+          console.log("Copiado con Clipboard API:", texto);
+        } else {
+          // Fallback: textarea + execCommand
+          const ta = document.createElement("textarea");
+          ta.value = texto;
+          ta.setAttribute("readonly", "");
+          ta.style.position = "absolute";
+          ta.style.left = "-9999px";
+          document.body.appendChild(ta);
+          ta.select();
+          document.execCommand("copy");
+          document.body.removeChild(ta);
+          console.log("Copiado con execCommand:", texto);
+        }
+      } catch (err) {
+        console.error("Error copiando al portapapeles:", err);
+      }
+    }
+
+    // Enlazar eventos onclick en todos los botones:
+    document.querySelectorAll("button[data-copy-id]").forEach(btn => {
+      btn.addEventListener("click", () => {
+        // data-copy-id puede ser una ID de elemento o el propio texto
+        copiarID(btn.dataset.copyId);
+      });
+    });
   </script>
 </body>
 </html>

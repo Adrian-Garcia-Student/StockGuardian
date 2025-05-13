@@ -231,7 +231,10 @@
     const ths = tabla.querySelectorAll("thead th");
     if (index <= 0 || index >= ths.length - 1) return; // No eliminar ❌ ni ➕
 
-    const nombreColumna = ths[index].textContent.trim(); //Recuperar nombre de la columna a eliminar
+    const clon = ths[index].cloneNode(true);
+    clon.querySelectorAll("button").forEach(b => b.remove());
+    const nombreColumna = clon.textContent.trim();
+
 
     // 1. Eliminar th correspondiente
     ths[index].remove();

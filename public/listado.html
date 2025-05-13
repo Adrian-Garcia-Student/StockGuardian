@@ -41,9 +41,15 @@
   <script>
     let idAEliminar = "";
 
-    function copiarID(id) {
-      navigator.clipboard.writeText(id);
-    }
+    async function copiarID(id) {
+      try {
+        await navigator.clipboard.writeText(id);
+        console.log("ID copiado correctamente:", id);
+      } catch (err) {
+        console.error("Error al copiar el ID:", err);
+      }
+}
+
 
     function mostrarConfirmacion(id) {
       idAEliminar = id;

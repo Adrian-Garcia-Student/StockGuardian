@@ -85,12 +85,21 @@
       </div>
     </div>
   <script>
-    function copiarID() {
-      const id = document.getElementById('inventoryID').innerText;
-      navigator.clipboard.writeText(id).catch(err => {
-        console.error("No se pudo copiar el ID:", err);
-      });
+    async function copiarID() {
+      try {
+        const id = document.getElementById("inventoryID")?.innerText || "";
+        if (!id) throw new Error("No se encontró el ID");
+
+        await navigator.clipboard.writeText(id);
+        console.log("ID copiado correctamente:", id);
+
+        // Opcional: retroalimentación visual
+        // document.querySelector(".copiado-msg")?.classList.add("visible");
+      } catch (err) {
+        console.error("Error al copiar el ID:", err);
+      }
     }
+
 
     //Cargar datos del inventario
     document.addEventListener("DOMContentLoaded", async function() {

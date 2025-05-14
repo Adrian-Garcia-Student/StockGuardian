@@ -54,8 +54,8 @@ app.post("/registro", async (req, res) => {
   const { usuario, email, password, comida } = req.body;
 
   const nuevoUsuario = {
-    Usuario: usuario,
     Nombre: email,
+    Usuario: usuario,
     ID_Usuario: generarID(),
     Contrasena: password,
     Comida: comida,

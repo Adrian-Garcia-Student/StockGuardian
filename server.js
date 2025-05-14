@@ -5,7 +5,6 @@ import { GetCommand, PutCommand, UpdateCommand, DeleteCommand, QueryCommand, Dyn
 import bodyParser from "body-parser";
 import path from "path";  // Importamos path
 import { fileURLToPath } from "url";  // Para convertir la URL en ruta de archivo
-import { use } from "react";
 
 const app = express();
 const port = 3000;

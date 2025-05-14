@@ -52,6 +52,7 @@ app.post("/login", async (req, res) => {
 
 app.post("/registro", async (req, res) => {
   const { usuario, email, password, comida } = req.body;
+  console.log({ usuario, email, password, comida });
 
   const nuevoUsuario = {
     Nombre: email,

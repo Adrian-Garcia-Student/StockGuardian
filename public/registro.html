@@ -19,6 +19,9 @@
     </div>
       <!-- Formulario -->
       <form id="form-registro">
+        <label>Usuario<span class="required">*</span></label>
+        <input name="user" placeholder="Ingrese un nombre de usuario" required>
+
         <label>Correo Electrónico <span class="required">*</span></label>
         <input type="email" name="email" placeholder="Ejemplo@gmail.com" required>
 
@@ -51,6 +54,7 @@
     form.addEventListener("submit", async function(e) {
       e.preventDefault();
 
+      const user = form.user.value;
       const email = form.email.value;
       const password = form.password.value;
       const confirm = form.confirm.value;

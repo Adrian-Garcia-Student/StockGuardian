@@ -59,6 +59,7 @@ body {
   font-size: 2.5rem; /* 48px */
   font-weight: 700;
   color: #000;
+  margin-top: 0rem;
 }
 
 /* FORMULARIO */
@@ -69,13 +70,14 @@ form {
 }
 
 form label {
-  font-size: 1rem;
+  font-size: 0.95rem;
   font-weight: 600;
   color: #1E1E1E;
 }
 
 form input {
   padding: 0.75rem 1rem;
+  height: 0.75rem;
   font-size: 1rem;
   border-radius: 8px;
   border: 1px solid #D9D9D9;

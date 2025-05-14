@@ -5,6 +5,7 @@ import { GetCommand, PutCommand, UpdateCommand, DeleteCommand, QueryCommand, Dyn
 import bodyParser from "body-parser";
 import path from "path";  // Importamos path
 import { fileURLToPath } from "url";  // Para convertir la URL en ruta de archivo
+import { use } from "react";
 
 const app = express();
 const port = 3000;
@@ -51,12 +52,12 @@ app.post("/login", async (req, res) => {
 });
 
 app.post("/registro", async (req, res) => {
-  const { usuario, email, password, comida } = req.body;
-  console.log({ usuario, email, password, comida });
+  const { user, email, password, comida } = req.body;
+  console.log({ user, email, password, comida });
 
   const nuevoUsuario = {
     Nombre: email,
-    Usuario: usuario,
+    Usuario: user,
     ID_Usuario: generarID(),
     Contrasena: password,
     Comida: comida,

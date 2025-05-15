@@ -55,35 +55,32 @@
     }
 
     async function confirmarEliminacion() {
-      const host = window.location.hostname;
+    const host = window.location.hostname;
 
-      try {
-        //Llamar a server.js para ejecutar la eliminación
-        const res = await fetch(
-          `http://${host}:3000/api/inventario/eliminar?inventarioId=${idAEliminar}`,
-          { method: "DELETE" }
-        );
+    try {
+      const res = await fetch(
+        `http://${host}:3000/api/inventario/eliminar?inventarioId=${idAEliminar}`,
+        { method: "DELETE" }
+      );
 
-        if (!res.ok) {
-          const data = await res.json();
-          throw new Error(data.error || "Error eliminando inventario");
-        }
-
-        //Cerrar modal
-        cerrarModal();
-
-        //Eliminar visualmente la fila correspondiente del DOM según el ID encontrado en el 'span' de html
-        document.querySelectorAll(".fila").forEach(fila => {
-          if (fila.getAttribute("data-id") === idAEliminar) fila.remove();
-        });
-
-        alert("Inventario eliminado correctamente");
-      } catch (err) {
-        console.error(err);
-        alert("No se pudo eliminar el inventario: " + err.message);
-        cerrarModal();
+      if (!res.ok) {
+        const data = await res.json();
+        throw new Error(data.error || "Error eliminando inventario");
       }
+
+      cerrarModal();
+
+      // ✅ Buscar directamente la fila que tiene el atributo data-id
+      const fila = document.querySelector(`.fila[data-id="${idAEliminar}"]`);
+      if (fila) fila.remove();
+
+      alert("Inventario eliminado correctamente");
+    } catch (err) {
+      console.error(err);
+      alert("No se pudo eliminar el inventario: " + err.message);
+      cerrarModal();
     }
+  }
 
     document.addEventListener("DOMContentLoaded", function() {
       async function cargarInventarios() {

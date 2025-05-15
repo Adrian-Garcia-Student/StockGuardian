@@ -83,23 +83,27 @@
     });
 
     function exportarHistorialCSV() {
-      const historial = JSON.parse(localStorage.getItem("historialCambios")) || [];
-      if (historial.length === 0) {
-        alert("No hay historial para exportar.");
+      const tabla = document.querySelector(".tabla-historial");
+      if (!tabla) {
+        alert("No se encontró la tabla para exportar.");
         return;
       }
 
-      const encabezados = ["ID_Historial", "Columna_Afectada", "Fecha_Accion", "ID_Inventario", "ID_Usuario", "Tipo_Accion"];
-      const filasCSV = historial.map(entry => [
-        entry.id,
-        entry.columna_afectada || "NULL",
-        entry.fecha_accion,
-        entry.id_inventario,
-        entry.id_usuario || "NULL",
-        entry.tipo_accion
-      ]);
+      const filas = tabla.querySelectorAll("tr");
+      if (filas.length <= 1) {
+        alert("No hay registros para exportar.");
+        return;
+      }
 
-      const contenido = [encabezados.join(","), ...filasCSV.map(fila => fila.map(valor => `"${valor}"`).join(","))].join("\n");
+      let csv = [];
+
+      filas.forEach((fila, i) => {
+        const celdas = fila.querySelectorAll("th, td");
+        const filaCSV = Array.from(celdas).map(celda => `"${celda.innerText.trim()}"`).join(",");
+        csv.push(filaCSV);
+      });
+
+      const contenido = csv.join("\n");
 
       const blob = new Blob([contenido], { type: "text/csv;charset=utf-8;" });
       const url = URL.createObjectURL(blob);
@@ -107,7 +111,7 @@
 
       const fecha = new Date();
       const nombreArchivo = `historial_${fecha.toISOString().slice(0,16).replace("T", "_").replace(":", "-")}.csv`;
-      
+
       link.setAttribute("href", url);
       link.setAttribute("download", nombreArchivo);
       document.body.appendChild(link);

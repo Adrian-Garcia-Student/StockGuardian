@@ -41,9 +41,6 @@
   <script>
     let idAEliminar = "";
 
-   
-
-
     function mostrarConfirmacion(id) {
       idAEliminar = id;
       document.getElementById("modal").style.display = "flex";
@@ -69,12 +66,12 @@
       }
 
       cerrarModal();
-
-      // ✅ Buscar directamente la fila que tiene el atributo data-id
-      const fila = document.querySelector(`.fila[data-id="${idAEliminar}"]`);
-      if (fila) fila.remove();
-
       alert("Inventario eliminado correctamente");
+
+      // 📥 Re-carga la lista completa
+      await cargarInventarios();
+
+      
     } catch (err) {
       console.error(err);
       alert("No se pudo eliminar el inventario: " + err.message);
@@ -82,45 +79,51 @@
     }
   }
 
-    document.addEventListener("DOMContentLoaded", function() {
-      async function cargarInventarios() {
-      const creadorID = localStorage.getItem("idUsuario");
+  // 1) Defino cargarInventarios en el scope global del script:
+  async function cargarInventarios() {
+      const tabla = document.querySelector(".tabla");
 
+      // Reescribo el encabezado cada vez
+      tabla.innerHTML = `
+        <div class="fila encabezado">
+          <span>Nombre</span>
+          <span>ID</span>
+          <span>Últ. Modificación</span>
+          <span>Acciones</span>
+        </div>
+      `;
+
+      const creadorID = localStorage.getItem("idUsuario");
       const host = window.location.hostname;
       const response = await fetch(`http://${host}:3000/datosinventario/${creadorID}`);
       const data = await response.json();
 
-      if (response.ok) {
-        const inventarios = data.datosinventario;
-        
-        //Agregar los inventarios a la lista
-        const tabla = document.querySelector(".tabla");
-        inventarios.forEach(inventario => {
-          const fila = document.createElement("div");
-          fila.classList.add("fila");
-          fila.setAttribute("data-id", inventario.ID_Inventario);
-
-
-          fila.innerHTML = `
-            <span>${inventario.Nombre}</span>
-            <span>${inventario.ID_Inventario} <button data-copy-id="${inventario.ID_Inventario}">📋</button></span>
-            <span>
-              ${inventario.FechaModificacion
-                ? new Date(inventario.FechaModificacion).toLocaleString()
-                : "No disponible"}
-            </span>
-            <span><button class="eliminar-btn" onclick="mostrarConfirmacion('${inventario.ID_Inventario}')">🗑️</button></span>
-          `;
-          
-          tabla.appendChild(fila);
-        });
-      } else {
+      if (!response.ok) {
         alert(data.mensaje || "Error al cargar inventarios.");
-      }
+        return;
       }
 
-      cargarInventarios();
-    });
+      data.datosinventario.forEach(inventario => {
+        const fila = document.createElement("div");
+        fila.classList.add("fila");
+        fila.dataset.id = inventario.ID_Inventario;
+
+        fila.innerHTML = `
+          <span>${inventario.Nombre}</span>
+          <span>${inventario.ID_Inventario} <button data-copy-id="${inventario.ID_Inventario}">📋</button></span>
+          <span>${
+            inventario.FechaModificacion
+              ? new Date(inventario.FechaModificacion).toLocaleString()
+              : "No disponible"
+          }</span>
+          <span><button class="eliminar-btn" onclick="mostrarConfirmacion('${inventario.ID_Inventario}')">🗑️</button></span>
+        `;
+        tabla.appendChild(fila);
+      });
+    }
+
+    // 2) Llamo a cargarInventarios cuando el DOM esté listo:
+    document.addEventListener("DOMContentLoaded", cargarInventarios);
 
   </script>
 

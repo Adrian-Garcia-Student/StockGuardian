@@ -102,6 +102,8 @@
         inventarios.forEach(inventario => {
           const fila = document.createElement("div");
           fila.classList.add("fila");
+          fila.setAttribute("data-id", inventario.ID_Inventario);
+
 
           fila.innerHTML = `
             <span>${inventario.Nombre}</span>

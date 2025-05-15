@@ -74,8 +74,7 @@
 
         //Eliminar visualmente la fila correspondiente del DOM según el ID encontrado en el 'span' de html
         document.querySelectorAll(".fila").forEach(fila => {
-          const spanID = fila.children[1]?.innerText.split(" ")[0]; 
-          if (spanID === idAEliminar) fila.remove();
+          if (fila.getAttribute("data-id") === idAEliminar) fila.remove();
         });
 
         alert("Inventario eliminado correctamente");
